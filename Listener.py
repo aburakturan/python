@@ -1,4 +1,4 @@
-from binance.client import Client
+from binance.client import Client  # python3 -m pip install python-binance
 import pandas as pd
 import numpy as np
 import sys
@@ -9,7 +9,8 @@ from sys import maxsize
 from numpy import set_printoptions
 from pymongo import MongoClient, DESCENDING, ASCENDING
 
-client = MongoClient('localhost',27017)  
+# client = MongoClient('localhost',27017)  
+client = MongoClient('mongodb+srv://ahmetburak:og1LCXX4VCw7RYV7@cluster0.ygftz.mongodb.net/')  
 
 db = client.TraderPmax
 track = db.track
@@ -161,6 +162,20 @@ def do(asset):
         })
         index += 1  
     
+
+    # Mongo test
+
+    print()
+    wallet.insert_one({
+        'asset': asset,
+        'buy_time': datetime.now(),
+        'track_data' :WatchList,
+        'candle_data': numpy_data,
+        })
+                       
+                       
+                        
+                        
 
 
     # Eğer Watchlist elemanı negatif değere düştüyse listeden çıkar
