@@ -100,7 +100,7 @@ def binanceWalletList():
                     total_percantage = total_percantage + percentage
                     Table.add_row([count, balance['asset'], total_buy_price, total_current_price, percentage ])
                     if percentage > 5:
-                        notify_ending("{} Binance Wallet %3'ügeçti".format(balance['asset']))
+                        notify_ending("{} Binance Wallet %5'i geçti".format(balance['asset']))
 
         
     if args.sort:
