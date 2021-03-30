@@ -8,10 +8,16 @@ import json
 from sys import maxsize
 from numpy import set_printoptions
 from pymongo import MongoClient, DESCENDING, ASCENDING
+import Notify
+from ansimarkup import ansiprint as print
+from pyfiglet import Figlet
+
+f = Figlet(font='slant')
+
 
 client = MongoClient('localhost',27017)  
 
-db = client.pmaxnew
+db = client.pmaxV1
 bought = db.bought
 sold = db.sold
 
@@ -30,8 +36,10 @@ def getCandles(asset):
     try:
         candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_4HOUR)
     except:
-        print('Yeniden Başlatılmayı Bekliyor')
+        print("<b><yellow>Bağlantı Koptu</yellow> </b>")
+        print("<b><green>Yeniden Başlatılmayı Bekliyor</green> </b>")
         time.sleep(30)
+        print("<b><blue>Yeniden Başlatıldı</blue> </b>")
         candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_4HOUR)
         pass
         
@@ -129,8 +137,10 @@ def PMAX(dataframe, period=4, multiplier=0.1, length=4, MAtype=7, src=1):
 # ONGUSDT //Çok kırılım var
 # TRUUSDT, CKBUSDT, TWTUSDT, LITUSDT, DODOUSDT, BADGERUSDT, FISUSDT, LINAUSDT, PERPUSDT
 
-assets = ["QTUMUSDT", "XRPUSDT", "EOSUSDT", "VETUSDT", "LINKUSDT", "BTTUSDT", "HOTUSDT", "ZILUSDT", "ZECUSDT", "IOSTUSDT", "CELRUSDT", "DASHUSDT", "NANOUSDT", "OMGUSDT", "THETAUSDT", "TFUELUSDT", "ONEUSDT", "FTMUSDT", "GTOUSDT", "DOGEUSDT", "DUSKUSDT", "ANKRUSDT", "WINUSDT", "COSUSDT", "NPXSUSDT", "MTLUSDT", "TOMOUSDT", "PERLUSDT", "DENTUSDT", "MFTUSDT", "KEYUSDT", "CVCUSDT", "CHZUSDT", "BEAMUSDT", "STXUSDT", "IOTXUSDT", "TROYUSDT", "DREPUSDT", "WRXUSDT", "BTSUSDT", "LSKUSDT", "LTOUSDT", "MBLUSDT", "COTIUSDT", "STPTUSDT", "HIVEUSDT", "CHRUSDT", "GXSUSDT", "ARDRUSDT", "STMXUSDT", "REPUSDT", "COMPUSDT", "SCUSDT", "ZENUSDT", "SXPUSDT", "STORJUSDT", "YFIUSDT", "BALUSDT", "JSTUSDT", "SRMUSDT", "ANTUSDT", "CRVUSDT", "DOTUSDT", "LUNAUSDT", "RSRUSDT", "TRBUSDT", "YFIIUSDT", "KSMUSDT", "UMAUSDT", "NBSUSDT", "OXTUSDT", "SUNUSDT", "AVAXUSDT", "HNTUSDT", "FLMUSDT", "ORNUSDT", "INJUSDT", "CTKUSDT", "AKROUSDT", "DNTUSDT", "STRAXUSDT", "AVAUSDT", "XEMUSDT", "SUSDUSDT", "1INCHUSDT", "REEFUSDT"]
+# assets = ["XLMUSDT","WINGUSDT","QTUMUSDT", "XRPUSDT", "EOSUSDT", "VETUSDT", "LINKUSDT", "BTTUSDT", "HOTUSDT", "ZILUSDT", "ZECUSDT", "IOSTUSDT", "CELRUSDT", "DASHUSDT", "NANOUSDT", "OMGUSDT", "THETAUSDT", "TFUELUSDT", "ONEUSDT", "FTMUSDT", "GTOUSDT", "DOGEUSDT", "DUSKUSDT", "ANKRUSDT", "WINUSDT", "COSUSDT", "NPXSUSDT", "MTLUSDT", "TOMOUSDT", "PERLUSDT", "DENTUSDT", "MFTUSDT", "KEYUSDT", "CVCUSDT", "CHZUSDT", "BEAMUSDT", "STXUSDT", "IOTXUSDT", "TROYUSDT", "DREPUSDT", "WRXUSDT", "BTSUSDT", "LSKUSDT", "LTOUSDT", "MBLUSDT", "COTIUSDT", "STPTUSDT", "HIVEUSDT", "CHRUSDT", "GXSUSDT", "ARDRUSDT", "STMXUSDT", "REPUSDT", "COMPUSDT", "SCUSDT", "ZENUSDT", "SXPUSDT", "STORJUSDT", "YFIUSDT", "BALUSDT", "JSTUSDT", "SRMUSDT", "ANTUSDT", "CRVUSDT", "DOTUSDT", "LUNAUSDT", "RSRUSDT", "TRBUSDT", "YFIIUSDT", "KSMUSDT", "UMAUSDT", "NBSUSDT", "OXTUSDT", "SUNUSDT", "AVAXUSDT", "HNTUSDT", "FLMUSDT", "ORNUSDT", "INJUSDT", "CTKUSDT", "AKROUSDT", "DNTUSDT", "STRAXUSDT", "AVAUSDT", "XEMUSDT", "SUSDUSDT", "1INCHUSDT", "REEFUSDT"]
 # assets = ["ZILUSDT"]
+assets = ["DCRUSDT", "STORJUSDT", "USDTBKRW", "MANAUSDT", "AUDUSDT", "YFIUSDT", "BALUSDT", "BLZUSDT", "IRISUSDT", "KMDUSDT", "USDTDAI", "JSTUSDT", "SRMUSDT", "ANTUSDT", "CRVUSDT", "SANDUSDT", "OCEANUSDT", "NMRUSDT", "DOTUSDT", "LUNAUSDT", "RSRUSDT", "PAXGUSDT", "WNXMUSDT", "TRBUSDT", "BZRXUSDT", "SUSHIUSDT", "YFIIUSDT", "KSMUSDT", "EGLDUSDT", "DIAUSDT", "RUNEUSDT", "FIOUSDT", "UMAUSDT", "USDTNGN", "BELUSDT", "WINGUSDT", "UNIUSDT", "NBSUSDT", "OXTUSDT", "SUNUSDT", "AVAXUSDT", "HNTUSDT", "FLMUSDT", "ORNUSDT", "UTKUSDT", "XVSUSDT", "ALPHAUSDT", "AAVEUSDT", "NEARUSDT", "FILUSDT", "INJUSDT", "AUDIOUSDT", "CTKUSDT", "AKROUSDT", "AXSUSDT", "HARDUSDT", "DNTUSDT", "STRAXUSDT", "UNFIUSDT", "ROSEUSDT", "AVAUSDT", "XEMUSDT", "SKLUSDT", "SUSDUSDT", "GRTUSDT", "JUVUSDT", "PSGUSDT", "USDTBVND", "1INCHUSDT", "REEFUSDT", "OGUSDT", "ATMUSDT", "ASRUSDT", "SCUSDT", "ZENUSDT", "SNXUSDT", "VTHOUSDT", "DGBUSDT", "GBPUSDT", "SXPUSDT", "MKRUSDT", "TCTUSDT", "WRXUSDT", "BTSUSDT", "LSKUSDT", "BNTUSDT", "LTOUSDT", "STRATUSDT", "AIONUSDT", "MBLUSDT", "COTIUSDT", "STPTUSDT", "USDTZAR", "WTCUSDT", "DATAUSDT", "SOLUSDT", "USDTIDRT", "CTSIUSDT", "HIVEUSDT", "CHRUSDT", "GXSUSDT", "ARDRUSDT", "MDTUSDT", "STMXUSDT", "KNCUSDT", "REPUSDT", "LRCUSDT", "PNTUSDT", "COMPUSDT", "BTCUSDT", "ETHUSDT", "BNBUSDT", "BCCUSDT", "NEOUSDT", "LTCUSDT", "QTUMUSDT", "ADAUSDT", "XRPUSDT", "EOSUSDT", "IOTAUSDT", "XLMUSDT", "ONTUSDT", "TRXUSDT", "ETCUSDT", "ICXUSDT", "NULSUSDT", "VETUSDT", "BCHABCUSDT", "LINKUSDT", "WAVESUSDT", "BTTUSDT", "USDSUSDT", "HOTUSDT", "ZILUSDT", "ZRXUSDT", "FETUSDT", "BATUSDT", "XMRUSDT", "ZECUSDT", "IOSTUSDT", "CELRUSDT", "DASHUSDT", "NANOUSDT", "OMGUSDT", "THETAUSDT", "ENJUSDT", "MITHUSDT", "MATICUSDT", "ATOMUSDT", "TFUELUSDT", "ONEUSDT", "FTMUSDT", "ALGOUSDT", "GTOUSDT", "DOGEUSDT", "DUSKUSDT", "ANKRUSDT", "WINUSDT", "COSUSDT", "NPXSUSDT", "COCOSUSDT", "MTLUSDT", "TOMOUSDT", "PERLUSDT", "DENTUSDT", "MFTUSDT", "KEYUSDT", "STORMUSDT", "DOCKUSDT", "WANUSDT", "FUNUSDT", "CVCUSDT", "CHZUSDT", "BANDUSDT", "BEAMUSDT", "XTZUSDT", "RENUSDT", "RVNUSDT", "HCUSDT", "HBARUSDT", "NKNUSDT", "STXUSDT", "KAVAUSDT", "ARPAUSDT", "IOTXUSDT", "RLCUSDT", "MCOUSDT", "CTXCUSDT", "BCHUSDT", "TROYUSDT", "VITEUSDT", "FTTUSDT", "BUSDTRY", "USDTTRY", "USDTRUB", "OGNUSDT", "DREPUSDT"]
+
 def do(asset):
     result = PMAX(getCandles(asset))
 
@@ -142,9 +152,9 @@ def do(asset):
     if (last_pmax != current_pmax):
         if(current_pmax == "down"):
             if (isInWallet != None):
-                print('SELL')
-                print(asset)
-                print(result)
+                print("<b><blue>SATILDI</blue> </b>")
+                print("<b>{}</b>".format(asset))
+                print("<b><fg 0,95,0><white>{}</white></fg 0,95,0></b>".format(result) )
                 sold.insert_one({
                         'asset': asset,
                         'pmax': result['pmX_4_0.1_4_7'][499],
@@ -155,9 +165,10 @@ def do(asset):
                 bought.delete_one({'asset': asset})
         else:
             if (isInWallet == None):
-                print('BUY')
-                print(asset)
-                print(result)
+                Notify.notify(asset, 'Alım Sinyali', 'Trader V1', sound=True)
+                print("<b><blue>SATIN ALINDI</blue> </b>")
+                print("<b>{}</b>".format(asset))
+                print("<b><fg 0,95,0><white>{}</white></fg 0,95,0></b>".format(result) )
                 bought.insert_one({
                         'asset': asset,
                         'pmax': result['pmX_4_0.1_4_7'][499],
@@ -165,19 +176,20 @@ def do(asset):
                         'buy_time': datetime.now()
                         }) 
             else:
-                print('Up Uyarısı Tekrar')
-                print(asset)
-                print(result)
-
+                print("<b><green>Pmax Up Uyarısı</green> <red>Tekrar</red>")
+                print("<b>{}</b>".format(asset))
         
 i = 0
 while i < len(assets):
-  do(assets[i])
-  i += 1
-  time.sleep(5)
-  if (i == len(assets)):
-      print('***')
-      i = 0
+    if (i == 0):
+        print ("<b><yellow>{}</yellow> </b>".format(f.renderText('Trader V1')))
+    do(assets[i])
+    i += 1
+    time.sleep(5)
+    if (i == len(assets)):
+        print("<b><green>*** Listenin Sonu ***</green> </b>")
+        print("<b><yellow>*** Yeniden Başlıyor ***</yellow> </b>")
+        i = 0
 
 
 

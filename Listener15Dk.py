@@ -12,8 +12,8 @@ from pymongo import MongoClient, DESCENDING, ASCENDING
 client = MongoClient('localhost',27017)  
 
 db = client.pmax
-bought = db.bought
-sold = db.sold
+bought = db.bought15
+sold = db.sold15
 
 set_printoptions(threshold=maxsize)
 
@@ -28,11 +28,11 @@ def getCandles(asset):
     df = pd.DataFrame(columns= ['date', 'open', 'high', 'low', 'close', 'volume'])
     
     try:
-        candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_4HOUR)
+        candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_15MINUTE)
     except:
         print('Yeniden Başlatılmayı Bekliyor')
         time.sleep(30)
-        candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_4HOUR)
+        candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_15MINUTE)
         pass
         
         
@@ -133,12 +133,28 @@ assets = ["QTUMUSDT", "XRPUSDT", "EOSUSDT", "VETUSDT", "LINKUSDT", "BTTUSDT", "H
 # assets = ["ZILUSDT"]
 def do(asset):
     result = PMAX(getCandles(asset))
-
     isInWallet = bought.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
             
     current_pmax = result['pmX_4_0.1_4_7'][499]
     last_pmax = result['pmX_4_0.1_4_7'][498]
-                
+
+    index = 0
+    numpy_data = []
+    while index <= 5:
+        numpy_data.append({
+            'open': result['open'][index],
+            'high': result['high'][index],
+            'low': result['low'][index],
+            'close': result['close'][index],
+            'volume': result['volume'][index],
+            'ATR_4': result['ATR_4'][index],
+            'MA_7_4': result['MA_7_4'][index],
+            'pm_4_0_1_4_7': result['pm_4_0.1_4_7'][index],
+            'pmX_4_0_1_4_7': result['pmX_4_0.1_4_7'][index],
+        })
+        index += 1  
+       
+
     if (last_pmax != current_pmax):
         if(current_pmax == "down"):
             if (isInWallet != None):
@@ -150,7 +166,8 @@ def do(asset):
                         'pmax': result['pmX_4_0.1_4_7'][499],
                         'sold_price': result['close'][499],
                         'buy_data': isInWallet,
-                        'sold_time': datetime.now()
+                        'sold_time': datetime.now(),
+                        'candle_data': numpy_data,
                         }) 
                 bought.delete_one({'asset': asset})
         else:
@@ -162,7 +179,8 @@ def do(asset):
                         'asset': asset,
                         'pmax': result['pmX_4_0.1_4_7'][499],
                         'buy_price': result['close'][499],
-                        'buy_time': datetime.now()
+                        'buy_time': datetime.now(),
+                        'candle_data': numpy_data,
                         }) 
 
         

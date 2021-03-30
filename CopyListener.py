@@ -3,39 +3,35 @@ import pandas as pd
 import numpy as np
 import sys
 import time
-from datetime import datetime
-import json
+
+
+
 from sys import maxsize
 from numpy import set_printoptions
+
+
 from pymongo import MongoClient, DESCENDING, ASCENDING
 
-client = MongoClient('localhost',27017)  
+client = MongoClient('localhost',27017)  # 27017 is the default port number for mongodb
 
 db = client.pmax
-bought = db.bought
-sold = db.sold
+col = db.data
+
 
 set_printoptions(threshold=maxsize)
+
 
 def setInterval(func,time):
     e = threading.Event()
     while not e.wait(time):
         func()
- 
+
+
 client = Client('jjIP0g5xq7S1HjBSHLH1Eizw1qpPO0HxUm1P3CqlGUFKKmb7T4vLj7B6AYbqtEgu', '6W9hO9vrVWjMkThl2stbv0OR80Sl83GpkWzwYsIrOrAvPEVTQStLfKbc3bUasttg')
 
 def getCandles(asset):
     df = pd.DataFrame(columns= ['date', 'open', 'high', 'low', 'close', 'volume'])
-    
-    try:
-        candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_4HOUR)
-    except:
-        print('Yeniden Başlatılmayı Bekliyor')
-        time.sleep(30)
-        candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_4HOUR)
-        pass
-        
-        
+    candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_4HOUR)
     opentime, lopen, lhigh, llow, lclose, lvol, closetime = [], [], [], [], [], [], []
 
 
@@ -56,7 +52,7 @@ def getCandles(asset):
     df['volume'] = np.array(lvol).astype(np.float64)
     return df
 
-def PMAX(dataframe, period=4, multiplier=0.1, length=4, MAtype=7, src=1):
+def PMAX(dataframe, period=2, multiplier=1.4, length=2, MAtype=7, src=1):
     import talib.abstract as ta
     df = dataframe.copy()
     mavalue = 'MA_' + str(MAtype) + '_' + str(length)
@@ -116,65 +112,94 @@ def PMAX(dataframe, period=4, multiplier=0.1, length=4, MAtype=7, src=1):
             if (df[pm].iat[i - 1] == df['final_lb'].iat[i - 1]
                 and df[mavalue].iat[i] < df['final_lb'].iat[i]) else 0.00)
 
-    # up/down belirteçi / main logic
+    # Mark the trend direction up/down
     df[pmx] = np.where((df[pm] > 0.00), np.where((df[mavalue] < df[pm]), 'down',  'up'), np.NaN)
-    
+    # Remove basic and final bands from the columns
     df.drop(['basic_ub', 'basic_lb', 'final_ub', 'final_lb'], inplace=True, axis=1)
 
     df.fillna(0, inplace=True)
 
     return df
 
-# TUSDUSDT, PAXUSDT, BUSDUSDT // Trash
-# ONGUSDT //Çok kırılım var
-# TRUUSDT, CKBUSDT, TWTUSDT, LITUSDT, DODOUSDT, BADGERUSDT, FISUSDT, LINAUSDT, PERPUSDT
+# TRXUSDT
 
-assets = ["QTUMUSDT", "XRPUSDT", "EOSUSDT", "VETUSDT", "LINKUSDT", "BTTUSDT", "HOTUSDT", "ZILUSDT", "ZECUSDT", "IOSTUSDT", "CELRUSDT", "DASHUSDT", "NANOUSDT", "OMGUSDT", "THETAUSDT", "TFUELUSDT", "ONEUSDT", "FTMUSDT", "GTOUSDT", "DOGEUSDT", "DUSKUSDT", "ANKRUSDT", "WINUSDT", "COSUSDT", "NPXSUSDT", "MTLUSDT", "TOMOUSDT", "PERLUSDT", "DENTUSDT", "MFTUSDT", "KEYUSDT", "CVCUSDT", "CHZUSDT", "BEAMUSDT", "STXUSDT", "IOTXUSDT", "TROYUSDT", "DREPUSDT", "WRXUSDT", "BTSUSDT", "LSKUSDT", "LTOUSDT", "MBLUSDT", "COTIUSDT", "STPTUSDT", "HIVEUSDT", "CHRUSDT", "GXSUSDT", "ARDRUSDT", "STMXUSDT", "REPUSDT", "COMPUSDT", "SCUSDT", "ZENUSDT", "SXPUSDT", "STORJUSDT", "YFIUSDT", "BALUSDT", "JSTUSDT", "SRMUSDT", "ANTUSDT", "CRVUSDT", "DOTUSDT", "LUNAUSDT", "RSRUSDT", "TRBUSDT", "YFIIUSDT", "KSMUSDT", "UMAUSDT", "NBSUSDT", "OXTUSDT", "SUNUSDT", "AVAXUSDT", "HNTUSDT", "FLMUSDT", "ORNUSDT", "INJUSDT", "CTKUSDT", "AKROUSDT", "DNTUSDT", "STRAXUSDT", "AVAUSDT", "XEMUSDT", "SUSDUSDT", "1INCHUSDT", "REEFUSDT"]
-# assets = ["ZILUSDT"]
+
+assets = ["QTUMUSDT", "XRPUSDT", "EOSUSDT",  "TUSDUSDT", "VETUSDT", "PAXUSDT", "LINKUSDT", "BTTUSDT", "ONGUSDT", "HOTUSDT", "ZILUSDT", "ZECUSDT", "IOSTUSDT", "CELRUSDT", "DASHUSDT", "NANOUSDT", "OMGUSDT", "THETAUSDT", "TFUELUSDT", "ONEUSDT", "FTMUSDT", "GTOUSDT", "DOGEUSDT", "DUSKUSDT", "ANKRUSDT", "WINUSDT", "COSUSDT", "NPXSUSDT", "MTLUSDT", "TOMOUSDT", "PERLUSDT", "DENTUSDT", "MFTUSDT", "KEYUSDT", "CVCUSDT", "CHZUSDT", "BUSDUSDT", "BEAMUSDT", "STXUSDT", "IOTXUSDT", "TROYUSDT", "DREPUSDT", "WRXUSDT", "BTSUSDT", "LSKUSDT", "LTOUSDT", "MBLUSDT", "COTIUSDT", "STPTUSDT", "HIVEUSDT", "CHRUSDT", "GXSUSDT", "ARDRUSDT", "STMXUSDT", "REPUSDT", "COMPUSDT", "SCUSDT", "ZENUSDT", "SXPUSDT", "STORJUSDT", "YFIUSDT", "BALUSDT", "JSTUSDT", "SRMUSDT", "ANTUSDT", "CRVUSDT", "DOTUSDT", "LUNAUSDT", "RSRUSDT", "TRBUSDT", "YFIIUSDT", "KSMUSDT", "UMAUSDT", "NBSUSDT", "OXTUSDT", "SUNUSDT", "AVAXUSDT", "HNTUSDT", "FLMUSDT", "ORNUSDT", "INJUSDT", "CTKUSDT", "AKROUSDT", "DNTUSDT", "STRAXUSDT", "AVAUSDT", "XEMUSDT", "SUSDUSDT", "1INCHUSDT", "REEFUSDT", "TRUUSDT", "CKBUSDT", "TWTUSDT", "LITUSDT", "DODOUSDT", "BADGERUSDT", "FISUSDT", "LINAUSDT", "PERPUSDT"]
+# assets = ["TRXUSDT","QTUMUSDT"]
+
+# for val in assets:
+#     print(val)
+#     time.sleep(5)
+
+
 def do(asset):
     result = PMAX(getCandles(asset))
+    
+    _last_pmax = col.find_one(
+        {'asset': asset},
+        sort=[( '_id', DESCENDING )]
+    )
+    
+    if (result['pmX_2_1.4_2_7'][499] != None):
+        current_pmax = result['pmX_2_1.4_2_7'][499]
 
-    isInWallet = bought.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
-            
-    current_pmax = result['pmX_4_0.1_4_7'][499]
-    last_pmax = result['pmX_4_0.1_4_7'][498]
-                
-    if (last_pmax != current_pmax):
-        if(current_pmax == "down"):
-            if (isInWallet != None):
-                print('SELL')
-                print(asset)
-                print(result)
-                sold.insert_one({
-                        'asset': asset,
-                        'pmax': result['pmX_4_0.1_4_7'][499],
-                        'sold_price': result['close'][499],
-                        'buy_data': isInWallet,
-                        'sold_time': datetime.now()
-                        }) 
-                bought.delete_one({'asset': asset})
-        else:
-            if (isInWallet == None):
-                print('BUY')
-                print(asset)
-                print(result)
-                bought.insert_one({
-                        'asset': asset,
-                        'pmax': result['pmX_4_0.1_4_7'][499],
-                        'buy_price': result['close'][499],
-                        'buy_time': datetime.now()
-                        }) 
+        if (_last_pmax != None):
+            last_pmax = _last_pmax['pmax']
 
-        
+            if (last_pmax != current_pmax):
+                if(current_pmax == "down"):
+                    print('düşüş başladı')
+                else:
+                    print('Yükseliş başladı')
+
+            print(asset)
+            print(asset)
+            print('new data')
+            print(current_pmax)
+            print(result)
+            print('old data')
+            print(last_pmax)
+            print(_last_pmax)
+            print('------')
+
+        col.insert_one(
+            {
+                'asset': asset,
+                'pmax': result['pmX_2_1.4_2_7'][499] ,
+                'price': result['close'][499] ,
+            }
+        )
+
+
+
+
 i = 0
 while i < len(assets):
   do(assets[i])
   i += 1
-  time.sleep(5)
+  time.sleep(1)
   if (i == len(assets)):
-      print('***')
-      i = 0
+    i = 0
 
 
+
+# result = PMAX(getCandles())
+
+# for val in result['pmX_2_1.4_2_7']:
+#     print(val)
+
+# print(result)
+
+
+# print(result['pmX_2_1.4_2_7'][497])
+# print(result['pmX_2_1.4_2_7'][498])
+# print(result['pmX_2_1.4_2_7'][499])
+    
+# col.insert_one(
+#    {
+#       'name': "HOTUSDT",
+#       'salary': result['pmX_2_1.4_2_7'][499] ,
+#    }
+# )
 
 
