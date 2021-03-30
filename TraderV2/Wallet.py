@@ -83,12 +83,12 @@ def do():
         
         if args.watch:
             if item['asset'] in custom_watch_list:
-                if item['reason']:
+                if args.source == "sold":
                     Table.add_row([count, item['asset'], buy_price, current_price, percentage, item['reason'] ])
                 else:
                     Table.add_row([count, item['asset'], buy_price, current_price, percentage ])
         else:
-            if item['reason']:
+            if args.source == "sold":
                 Table.add_row([count, item['asset'], buy_price, current_price, percentage, item['reason'] ])
             else:
                 Table.add_row([count, item['asset'], buy_price, current_price, percentage ])
