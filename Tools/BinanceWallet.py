@@ -7,8 +7,10 @@ from datetime import datetime
 import json
 from sys import maxsize
 from numpy import set_printoptions
-# from pymongo import MongoClient, DESCENDING, ASCENDING
+from pymongo import MongoClient, DESCENDING, ASCENDING
 from prettytable import PrettyTable
+from ansimarkup import ansiprint as print
+from pyfiglet import Figlet
 import operator
 import argparse
 import json
@@ -24,14 +26,12 @@ def notify_ending(message):
     bot.sendMessage(chat_id=chat_id, text=message)
 
 
-# client = MongoClient('localhost',27017)  
+client = MongoClient('localhost',27017)  
 
-# db = client.pmaxnew
-# bought = db.bought
-# realWallet = db.realWallet
-# realSoldWallet = db.realSoldWallet
-from ansimarkup import ansiprint as print
-from pyfiglet import Figlet
+db = client.Binance
+wallet = db.wallet
+
+
 
 f = Figlet(font='slant')
 
@@ -43,8 +43,8 @@ client = Client('4LdqnhvqK0rg5f4KKIPpfhAdD9PG7fKF4ssNHqWazHL0GepGjTPXKhmUFz2Db8o
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--realWalletList", "-wl", help="liste gösterilsin")
-parser.add_argument("--realSoldWalletList", "-sl", help="liste gösterilsin")
+parser.add_argument("--update", "-u", help="Binance wallet update")
+parser.add_argument("--wallet", "-l", help="Binance wallet watch")
 
 parser.add_argument("--sort", "-o", help="neye göre sıralanacak?")
 parser.add_argument("--reverse", "-r", help="reverse sorting?")
@@ -64,29 +64,25 @@ if args.watch:
     custom_watch_list = args.watch.split(',')
 
 def binanceWalletList():
-   
-    
-    
     prices = client.get_all_tickers()
     Table = PrettyTable(['ID','Asset', 'Total Buy Price', 'Total Current Price', 'Percentage'])
 
     acc = client.get_account()
-    balances = acc['balances']
+    # balances = acc['balances']
+    balances = wallet.find({})
 
     count = 0
     total_percantage = 0
     for balance in balances:
-        if float(balance['free']) > 0 or float(balance['locked']) > 0:
-            if balance['asset'] != 'BNB' and balance['asset'] != 'USDT' and balance['asset'] != 'LDDOGE':
+        
                 count = count +1
                 symbol = "{}USDT".format(balance['asset'])
                 trades = client.get_my_trades(symbol=symbol)
 
-                if float(balance['free']) > 0:
-                    qty = float(balance['free'])
-                elif float(balance['locked']) > 0:
-                    qty = float(balance['locked'])
+                buy_price = float(balance['buy_price'])
+                qty = float(balance['qty'])
 
+                
                 for trade in trades:
                     buy_price = float(trade['price'])
                     total_buy_price = qty * buy_price
@@ -124,10 +120,73 @@ def binanceWalletList():
     print("<b><blue>Farkların Toplamı</blue> </b><b><yellow>{}</yellow></b>".format(total_percantage) )
   
 
+def binanceWalletRecord():
+    wallet.remove({})
+    print("<b><blue>Cüzdan silindi</blue> </b>" )
 
-i = 0
-while i >= 0:
-    i+=1
-    binanceWalletList()
-    time.sleep(300)
+    prices = client.get_all_tickers()
+    
+    acc = client.get_account()
+    balances = acc['balances']
 
+    count = 0
+    total_percantage = 0
+    for balance in balances:
+        if float(balance['free']) > 0 or float(balance['locked']) > 0:
+            if balance['asset'] != 'BNB' and balance['asset'] != 'USDT' and balance['asset'] != 'LDDOGE':
+                count = count +1
+                symbol = "{}USDT".format(balance['asset'])
+                trades = client.get_my_trades(symbol=symbol)
+
+                if float(balance['free']) > 0:
+                    qty = float(balance['free'])
+                elif float(balance['locked']) > 0:
+                    qty = float(balance['locked'])
+
+                for trade in trades:
+                    buy_price = float(trade['price'])
+                    total_buy_price = qty * buy_price
+                
+                for price in prices:
+                    if (price['symbol'] == symbol):
+                        current_price = float(price['price'])
+                        total_current_price = qty * current_price
+
+                
+                if (total_buy_price <= 10):
+                    count -= 1
+                else:
+                    percentage = ((total_current_price-total_buy_price)/total_current_price)*100
+                    total_percantage = total_percantage + percentage
+                    wallet.insert_one({
+                        'asset': balance['asset'],
+                        'qty':qty,
+                        'total_buy_price': total_buy_price,
+                        'buy_price': buy_price,
+                        'total_current_price': total_current_price,
+                        'percentage': percentage
+                        }) 
+                    print("<b><blue>Cüzdan güncelleniyor:</blue> </b><b><yellow> {} </yellow></b>".format(balance['asset']) )
+
+                    
+
+
+
+# i = 0
+# while i >= 0:
+#     i+=1
+#     binanceWalletList()
+#     time.sleep(300)
+
+
+
+if args.update:
+    binanceWalletRecord()
+elif args.wallet:
+    i = 0
+    while i >= 0:
+        i+=1
+        binanceWalletList()
+        time.sleep(300)
+
+        
