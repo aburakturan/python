@@ -173,7 +173,16 @@ def do(asset):
     # Eğer Watchlist elemanı negatif değere düştüyse listeden çıkar
     if (WatchList != None):  # İzleme Listesindeyse
         time.sleep(1)
-        candles = client.get_all_tickers()
+        
+
+        try:
+            candles = client.get_all_tickers()
+        except:
+            time.sleep(30)
+            candles = client.get_all_tickers()
+            pass
+
+
         buy_price = float(WatchList['buy_price'])
         for candle in candles:
             if (candle['symbol'] == asset):
@@ -336,7 +345,13 @@ def do(asset):
             else:  # Takip listesindeyse 
                 if (WalletList == None): # Cüzdanda değilse
                     time.sleep(1)
-                    candles = client.get_all_tickers()
+                    try:
+                        candles = client.get_all_tickers()
+                    except:
+                        time.sleep(30)
+                        candles = client.get_all_tickers()
+                        pass
+
                     for candle in candles:
                             if (candle['symbol'] == asset):
                                 current_price = float(candle['price'])
