@@ -54,7 +54,10 @@ def do():
     wallet = source.find({})
     candles = client.get_all_tickers()
 
-    Table = PrettyTable(['ID','Asset', 'Buy', 'Current', 'Percentage'])
+    if args.source == "sold":
+        Table = PrettyTable(['ID','Asset', 'Buy', 'Current', 'Percentage', 'Reason'])
+    else:
+        Table = PrettyTable(['ID','Asset', 'Buy', 'Current', 'Percentage'])
 
     total_percantage = 0
     count = 0
@@ -80,9 +83,15 @@ def do():
         
         if args.watch:
             if item['asset'] in custom_watch_list:
-                Table.add_row([count, item['asset'], buy_price, current_price, percentage ])
+                if item['reason']:
+                    Table.add_row([count, item['asset'], buy_price, current_price, percentage, item['reason'] ])
+                else:
+                    Table.add_row([count, item['asset'], buy_price, current_price, percentage ])
         else:
-            Table.add_row([count, item['asset'], buy_price, current_price, percentage ])
+            if item['reason']:
+                Table.add_row([count, item['asset'], buy_price, current_price, percentage, item['reason'] ])
+            else:
+                Table.add_row([count, item['asset'], buy_price, current_price, percentage ])
 
     
     if args.sort:
