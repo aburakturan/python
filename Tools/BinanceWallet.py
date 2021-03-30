@@ -11,7 +11,17 @@ from numpy import set_printoptions
 from prettytable import PrettyTable
 import operator
 import argparse
+import json
+import telegram
 
+
+def notify_ending(message):
+    
+    token = "1664179275:AAHSNRalCCJmfHrnpm0GnijgUbbH38u41vw"
+    chat_id = "-514290409"
+
+    bot = telegram.Bot(token=token)
+    bot.sendMessage(chat_id=chat_id, text=message)
 
 
 # client = MongoClient('localhost',27017)  
@@ -55,6 +65,8 @@ if args.watch:
 
 def binanceWalletList():
    
+    
+    
     prices = client.get_all_tickers()
     Table = PrettyTable(['ID','Asset', 'Total Buy Price', 'Total Current Price', 'Percentage'])
 
@@ -91,6 +103,9 @@ def binanceWalletList():
                     percentage = ((total_current_price-total_buy_price)/total_current_price)*100
                     total_percantage = total_percantage + percentage
                     Table.add_row([count, balance['asset'], total_buy_price, total_current_price, percentage ])
+                    if percentage > 5:
+                        notify_ending("{} Binance Wallet %3'ügeçti".format(balance['asset']))
+
         
     if args.sort:
         Table.sortby = args.sort
@@ -108,5 +123,11 @@ def binanceWalletList():
     print("<b><blue>Ortalama Fark</blue> </b><b><yellow>{}</yellow></b>".format(total_percantage/count) )
     print("<b><blue>Farkların Toplamı</blue> </b><b><yellow>{}</yellow></b>".format(total_percantage) )
   
-binanceWalletList()
+
+
+i = 0
+while i >= 0:
+    i+=1
+    binanceWalletList()
+    time.sleep(300)
 
