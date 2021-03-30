@@ -69,17 +69,24 @@ def do():
         else:
             buy_price = float(item['buy_price'])
 
+        
+
         for candle in candles:
             if (candle['symbol'] == item['asset']):
                 current_price = float(candle['price'])
-                
                 if args.watch:
                     if item['asset'] in custom_watch_list:
+                        if args.source == "sold":
+                            current_price = item['sold_price']
                         percentage = ((current_price-buy_price)/current_price)*100
                         total_percantage = total_percantage + percentage
                 else:
+                    if args.source == "sold":
+                            current_price = item['sold_price']
                     percentage = ((current_price-buy_price)/current_price)*100
                     total_percantage = total_percantage + percentage
+
+        
         
         if args.watch:
             if item['asset'] in custom_watch_list:
