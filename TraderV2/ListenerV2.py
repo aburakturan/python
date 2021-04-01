@@ -66,6 +66,76 @@ def getCandles(asset):
     df['volume'] = np.array(lvol).astype(np.float64)
     return df
 
+def getCandles1Day(asset):
+    df = pd.DataFrame(columns= ['date', 'open', 'high', 'low', 'close', 'volume'])
+    
+
+    try:
+        candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_1DAY)
+    except:
+        print("<b><yellow>Bağlantı Koptu - 1 Günlük kontrol </yellow> </b>")
+        print("<b><green>Yeniden Başlatılmayı Bekliyor</green> </b>")
+        time.sleep(30)
+        print("<b><blue>Yeniden Başlatıldı</blue> </b>")
+        candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_1DAY)
+        pass
+        
+    
+
+    opentime, lopen, lhigh, llow, lclose, lvol, closetime = [], [], [], [], [], [], []
+
+    for candle in candles:
+        opentime.append(candle[0])
+        lopen.append(candle[1])
+        lhigh.append(candle[2])
+        llow.append(candle[3])
+        lclose.append(candle[4])
+        lvol.append(candle[5])
+        closetime.append(candle[6])
+
+    df['date'] = opentime
+    df['open'] = np.array(lopen).astype(np.float64)
+    df['high'] = np.array(lhigh).astype(np.float64)
+    df['low'] = np.array(llow).astype(np.float64)
+    df['close'] = np.array(lclose).astype(np.float64)
+    df['volume'] = np.array(lvol).astype(np.float64)
+    return df
+
+def getCandles15Min(asset):
+    df = pd.DataFrame(columns= ['date', 'open', 'high', 'low', 'close', 'volume'])
+    
+
+    try:
+        candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_15MINUTE)
+    except:
+        print("<b><yellow>Bağlantı Koptu - 1 Günlük kontrol </yellow> </b>")
+        print("<b><green>Yeniden Başlatılmayı Bekliyor</green> </b>")
+        time.sleep(30)
+        print("<b><blue>Yeniden Başlatıldı</blue> </b>")
+        candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_15MINUTE)
+        pass
+        
+    
+
+    opentime, lopen, lhigh, llow, lclose, lvol, closetime = [], [], [], [], [], [], []
+
+    for candle in candles:
+        opentime.append(candle[0])
+        lopen.append(candle[1])
+        lhigh.append(candle[2])
+        llow.append(candle[3])
+        lclose.append(candle[4])
+        lvol.append(candle[5])
+        closetime.append(candle[6])
+
+    df['date'] = opentime
+    df['open'] = np.array(lopen).astype(np.float64)
+    df['high'] = np.array(lhigh).astype(np.float64)
+    df['low'] = np.array(llow).astype(np.float64)
+    df['close'] = np.array(lclose).astype(np.float64)
+    df['volume'] = np.array(lvol).astype(np.float64)
+    return df
+
 def PMAX(dataframe, period=4, multiplier=0.1, length=4, MAtype=7, src=1):
     import talib.abstract as ta
     df = dataframe.copy()
@@ -258,7 +328,7 @@ def do(asset):
                                 # print('WalletList', WalletList)
                                 # print('Watchlist', WatchList)
 
-                                Notify.notify(asset, 'SATIŞ', 'Trader V2', sound=True)
+                                # Notify.notify(asset, 'SATIŞ', 'Trader V2', sound=True)
 
                                 # Silinecek
 
@@ -366,19 +436,33 @@ def do(asset):
                                 current_price = float(candle['price'])
                     buy_price = WatchList['buy_price']
                     percentage = ((current_price-buy_price)/current_price)*100
-                    if (percentage >= 3):
-                        Notify.notify(asset, 'Alım Sinyali %3', 'Trader V2', sound=True)
-                        print("<b><blue>SATIN ALINDI</blue> </b>")
-                        print("<b>{}</b>".format(asset))
-                        print("<b><fg 0,95,0><white>{}</white></fg 0,95,0></b>".format(result) )
-                        wallet.insert_one({
-                            'asset': asset,
-                            'buy_price': current_price,
-                            'buy_time': datetime.now(),
-                            'track_data' :WatchList,
-                            'candle_data': numpy_data,
-                            })
-                        track.delete_one({'asset': asset})
+                    if (percentage >= 0):
+
+                        # 1 günlük ve 15 dakikalık check
+                        time.sleep(1)
+                        result1Day = PMAX(getCandles1Day(asset))
+                        time.sleep(1)
+                        result15Min = PMAX(getCandles15Min(asset))
+                        current_pmax_1Day = result1Day['pmX_4_0.1_4_7'][len(result1Day)-5],result1Day['pmX_4_0.1_4_7'][len(result1Day)-4],result1Day['pmX_4_0.1_4_7'][len(result1Day)-3],result1Day['pmX_4_0.1_4_7'][len(result1Day)-2],result1Day['pmX_4_0.1_4_7'][len(result1Day)-1]
+                        current_pmax_15Min = result15Min['pmX_4_0.1_4_7'][len(result15Min)-5],result15Min['pmX_4_0.1_4_7'][len(result15Min)-4],result15Min['pmX_4_0.1_4_7'][len(result15Min)-3],result15Min['pmX_4_0.1_4_7'][len(result15Min)-2],result15Min['pmX_4_0.1_4_7'][len(result15Min)-1]
+                        
+                        # 1 günlük ve 15 dakikalık UP durumunda alım yapılır
+                        if result1Day['pmX_4_0.1_4_7'][len(result1Day)-1] == 'up' and result15Min['pmX_4_0.1_4_7'][len(result15Min)-1] == 'up' : 
+                            # Notify.notify(asset, 'Alım Sinyali %3', 'Trader V2', sound=True)
+                            Notify.notify(asset, 'Alım Sinyali 1G 4H 15M', 'Trader V2', sound=True)
+                            print("<b><blue>SATIN ALINDI 1G 4H 15M </blue> </b>")
+                            print("<b>{}</b>".format(asset))
+                            print("<b><fg 0,95,0><white>{}</white></fg 0,95,0></b>".format(result) )
+                            wallet.insert_one({
+                                'asset': asset,
+                                'buy_price': current_price,
+                                'buy_time': datetime.now(),
+                                'track_data' :WatchList,
+                                'candle_data': numpy_data,
+                                'current_pmax_1Day': current_pmax_1Day,
+                                'current_pmax_15Min': current_pmax_15Min
+                                })
+                            track.delete_one({'asset': asset})
 
         
 i = 0
