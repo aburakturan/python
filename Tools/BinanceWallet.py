@@ -15,6 +15,7 @@ import operator
 import argparse
 import json
 import telegram
+from termcolor import colored
 
 
 def notify_ending(message):
@@ -65,7 +66,8 @@ if args.watch:
 
 def binanceWalletList():
     prices = client.get_all_tickers()
-    Table = PrettyTable(['ID','Asset', 'Total Buy Price', 'Total Current Price', 'Percentage'])
+    # Table = PrettyTable(['ID','Asset', 'Total Buy Price', 'Total Current Price', 'Percentage'])
+    Table = PrettyTable(['ID','Asset', 'Percentage'])
 
     acc = client.get_account()
     # balances = acc['balances']
@@ -98,9 +100,12 @@ def binanceWalletList():
                 else:
                     percentage = ((total_current_price-total_buy_price)/total_current_price)*100
                     total_percantage = total_percantage + percentage
-                    Table.add_row([count, balance['asset'], total_buy_price, total_current_price, percentage ])
+                    if percentage > 0:
+                        Table.add_row([count,balance['asset'] ,  colored("%.2f" % round(float(percentage), 2), 'green', attrs=['bold']) ])
+                    else:
+                        Table.add_row([count,balance['asset'] ,  colored("%.2f" % round(float(percentage), 2), 'red', attrs=['bold']) ])
                     if percentage > 5:
-                        notify_ending("{} Binance Wallet %5'i geçti".format(balance['asset']))
+                        notify_ending("{} Binance Wallet %5'i geçti - {}".format(balance['asset'], percentage))
 
         
     if args.sort:
@@ -112,7 +117,7 @@ def binanceWalletList():
             Table.reversesort = False
 
 
-    print ("<b><red>{}</red> </b>".format(f.renderText('Trader Tools')))
+    # print ("<b><red>{}</red> </b>".format(f.renderText('Trader Tools')))
     print("<b><yellow>*** CÜZDAN (Binance) ***</yellow> </b>")
     print("<b><fg 0,95,0><white>{}</white></fg 0,95,0></b>".format(Table) )
 
