@@ -136,36 +136,39 @@ def PMAX(dataframe, period=4, multiplier=0.1, length=4, MAtype=7, src=1):
     return df
 
 # BCHSVUSDT,LENDUSDT, XZCUSDT, USDSBUSDT, ERDUSDT Grafik Yok
-# TUSDUSDT, PAXUSDT, BUSDUSDT, USDCUSDT,USDTBIDR,USDTBRL // Trash
+# TUSDUSDT, PAXUSDT, BUSDUSDT, USDCUSDT,USDTBIDR,USDTBRL, USDTDAI // Trash
 # ONGUSDT //Çok kırılım var
 # YENI COINLER TRUUSDT, CKBUSDT, TWTUSDT, LITUSDT, DODOUSDT, BADGERUSDT, FISUSDT, LINAUSDT, PERPUSDT, SUPERUSDT, VENUSDT, BULLUSDT, ETHBULLUSDT, ETHBEARUSDT, EOSBULLUSDT, BKRWUSDT, DAIUSDT, CELOUSDT, RIFUSDT, BTCSTUSDT, FIROUSDT, SFPUSDT, CAKEUSDT, ACMUSDT, OMUSDT, PONDUSDT, DEGOUSDT, ALICEUSDT, RAMPUSDT, USDTUAH
-assets = ["DCRUSDT", "STORJUSDT", "USDTBKRW", "MANAUSDT", "AUDUSDT", "YFIUSDT", "BALUSDT", "BLZUSDT", "IRISUSDT", "KMDUSDT", "USDTDAI", "JSTUSDT", "SRMUSDT", "ANTUSDT", "CRVUSDT", "SANDUSDT", "OCEANUSDT", "NMRUSDT", "DOTUSDT", "LUNAUSDT", "RSRUSDT", "PAXGUSDT", "WNXMUSDT", "TRBUSDT", "BZRXUSDT", "SUSHIUSDT", "YFIIUSDT", "KSMUSDT", "EGLDUSDT", "DIAUSDT", "RUNEUSDT", "FIOUSDT", "UMAUSDT", "USDTNGN", "BELUSDT", "WINGUSDT", "UNIUSDT", "NBSUSDT", "OXTUSDT", "SUNUSDT", "AVAXUSDT", "HNTUSDT", "FLMUSDT", "ORNUSDT", "UTKUSDT", "XVSUSDT", "ALPHAUSDT", "AAVEUSDT", "NEARUSDT", "FILUSDT", "INJUSDT", "AUDIOUSDT", "CTKUSDT", "AKROUSDT", "AXSUSDT", "HARDUSDT", "DNTUSDT", "STRAXUSDT", "UNFIUSDT", "ROSEUSDT", "AVAUSDT", "XEMUSDT", "SKLUSDT", "SUSDUSDT", "GRTUSDT", "JUVUSDT", "PSGUSDT", "USDTBVND", "1INCHUSDT", "REEFUSDT", "OGUSDT", "ATMUSDT", "ASRUSDT", "SCUSDT", "ZENUSDT", "SNXUSDT", "VTHOUSDT", "DGBUSDT", "GBPUSDT", "SXPUSDT", "MKRUSDT", "TCTUSDT", "WRXUSDT", "BTSUSDT", "LSKUSDT", "BNTUSDT", "LTOUSDT", "STRATUSDT", "AIONUSDT", "MBLUSDT", "COTIUSDT", "STPTUSDT", "USDTZAR", "WTCUSDT", "DATAUSDT", "SOLUSDT", "USDTIDRT", "CTSIUSDT", "HIVEUSDT", "CHRUSDT", "GXSUSDT", "ARDRUSDT", "MDTUSDT", "STMXUSDT", "KNCUSDT", "REPUSDT", "LRCUSDT", "PNTUSDT", "COMPUSDT", "BTCUSDT", "ETHUSDT", "BNBUSDT", "BCCUSDT", "NEOUSDT", "LTCUSDT", "QTUMUSDT", "ADAUSDT", "XRPUSDT", "EOSUSDT", "IOTAUSDT", "XLMUSDT", "ONTUSDT", "TRXUSDT", "ETCUSDT", "ICXUSDT", "NULSUSDT", "VETUSDT", "BCHABCUSDT", "LINKUSDT", "WAVESUSDT", "BTTUSDT", "USDSUSDT", "HOTUSDT", "ZILUSDT", "ZRXUSDT", "FETUSDT", "BATUSDT", "XMRUSDT", "ZECUSDT", "IOSTUSDT", "CELRUSDT", "DASHUSDT", "NANOUSDT", "OMGUSDT", "THETAUSDT", "ENJUSDT", "MITHUSDT", "MATICUSDT", "ATOMUSDT", "TFUELUSDT", "ONEUSDT", "FTMUSDT", "ALGOUSDT", "GTOUSDT", "DOGEUSDT", "DUSKUSDT", "ANKRUSDT", "WINUSDT", "COSUSDT", "NPXSUSDT", "COCOSUSDT", "MTLUSDT", "TOMOUSDT", "PERLUSDT", "DENTUSDT", "MFTUSDT", "KEYUSDT", "STORMUSDT", "DOCKUSDT", "WANUSDT", "FUNUSDT", "CVCUSDT", "CHZUSDT", "BANDUSDT", "BEAMUSDT", "XTZUSDT", "RENUSDT", "RVNUSDT", "HCUSDT", "HBARUSDT", "NKNUSDT", "STXUSDT", "KAVAUSDT", "ARPAUSDT", "IOTXUSDT", "RLCUSDT", "MCOUSDT", "CTXCUSDT", "BCHUSDT", "TROYUSDT", "VITEUSDT", "FTTUSDT", "BUSDTRY", "USDTTRY", "USDTRUB", "OGNUSDT", "DREPUSDT"]
+# GBPUSDT, USDTZAR  //sabit coinler
 
+assets = ["TRUUSDT", "CKBUSDT", "TWTUSDT", "LITUSDT", "DODOUSDT", "BADGERUSDT", "FISUSDT", "LINAUSDT", "PERPUSDT", "SUPERUSDT", "VENUSDT", "BKRWUSDT", "DAIUSDT", "CELOUSDT", "RIFUSDT", "BTCSTUSDT", "FIROUSDT", "SFPUSDT", "CAKEUSDT", "ACMUSDT", "OMUSDT", "PONDUSDT", "DEGOUSDT", "ALICEUSDT", "RAMPUSDT",   "DCRUSDT", "STORJUSDT", "MANAUSDT", "AUDUSDT", "YFIUSDT", "BALUSDT", "BLZUSDT", "IRISUSDT", "KMDUSDT", "JSTUSDT", "SRMUSDT", "ANTUSDT", "CRVUSDT", "SANDUSDT", "OCEANUSDT", "NMRUSDT", "DOTUSDT", "LUNAUSDT", "RSRUSDT", "PAXGUSDT", "WNXMUSDT", "TRBUSDT", "BZRXUSDT", "SUSHIUSDT", "YFIIUSDT", "KSMUSDT", "EGLDUSDT", "DIAUSDT", "RUNEUSDT", "FIOUSDT", "UMAUSDT", "BELUSDT", "WINGUSDT", "UNIUSDT", "NBSUSDT", "OXTUSDT", "SUNUSDT", "AVAXUSDT", "HNTUSDT", "FLMUSDT", "ORNUSDT", "UTKUSDT", "XVSUSDT", "ALPHAUSDT", "AAVEUSDT", "NEARUSDT", "FILUSDT", "INJUSDT", "AUDIOUSDT", "CTKUSDT", "AKROUSDT", "AXSUSDT", "HARDUSDT", "DNTUSDT", "STRAXUSDT", "UNFIUSDT", "ROSEUSDT", "AVAUSDT", "XEMUSDT", "SKLUSDT", "SUSDUSDT", "GRTUSDT", "JUVUSDT", "PSGUSDT", "1INCHUSDT", "REEFUSDT", "OGUSDT", "ATMUSDT", "ASRUSDT", "SCUSDT", "ZENUSDT", "SNXUSDT", "VTHOUSDT", "DGBUSDT", "SXPUSDT", "MKRUSDT", "TCTUSDT", "WRXUSDT", "BTSUSDT", "LSKUSDT", "BNTUSDT", "LTOUSDT", "STRATUSDT", "AIONUSDT", "MBLUSDT", "COTIUSDT", "STPTUSDT", "WTCUSDT", "DATAUSDT", "SOLUSDT",  "CTSIUSDT", "HIVEUSDT", "CHRUSDT", "GXSUSDT", "ARDRUSDT", "MDTUSDT", "STMXUSDT", "KNCUSDT", "REPUSDT", "LRCUSDT", "PNTUSDT", "COMPUSDT", "BTCUSDT", "ETHUSDT", "BNBUSDT", "BCCUSDT", "NEOUSDT", "LTCUSDT", "QTUMUSDT", "ADAUSDT", "XRPUSDT", "EOSUSDT", "IOTAUSDT", "XLMUSDT", "ONTUSDT", "TRXUSDT", "ETCUSDT", "ICXUSDT", "NULSUSDT", "VETUSDT", "BCHABCUSDT", "LINKUSDT", "WAVESUSDT", "BTTUSDT", "USDSUSDT", "HOTUSDT", "ZILUSDT", "ZRXUSDT", "FETUSDT", "BATUSDT", "XMRUSDT", "ZECUSDT", "IOSTUSDT", "CELRUSDT", "DASHUSDT", "NANOUSDT", "OMGUSDT", "THETAUSDT", "ENJUSDT", "MITHUSDT", "MATICUSDT", "ATOMUSDT", "TFUELUSDT", "ONEUSDT", "FTMUSDT", "ALGOUSDT", "GTOUSDT", "DOGEUSDT", "DUSKUSDT", "ANKRUSDT", "WINUSDT", "COSUSDT", "NPXSUSDT", "COCOSUSDT", "MTLUSDT", "TOMOUSDT", "PERLUSDT", "DENTUSDT", "MFTUSDT", "KEYUSDT", "STORMUSDT", "DOCKUSDT", "WANUSDT", "FUNUSDT", "CVCUSDT", "CHZUSDT", "BANDUSDT", "BEAMUSDT", "XTZUSDT", "RENUSDT", "RVNUSDT", "HCUSDT", "HBARUSDT", "NKNUSDT", "STXUSDT", "KAVAUSDT", "ARPAUSDT", "IOTXUSDT", "RLCUSDT", "MCOUSDT", "CTXCUSDT", "BCHUSDT", "TROYUSDT", "VITEUSDT", "FTTUSDT", "OGNUSDT", "DREPUSDT"]
+# 197 asset
 def do(asset):
 
-    # print(asset)
+    # sys.stdout.write(asset)
     
     result = PMAX(getCandles(asset))
+
     
     WatchList = track.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
     WalletList = wallet.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
     
-    current_pmax = result['pmX_4_0.1_4_7'][499]
-    last_pmax = result['pmX_4_0.1_4_7'][498]
+    current_pmax = result['pmX_4_0.1_4_7'][len(result)-1]
+    last_pmax = result['pmX_4_0.1_4_7'][len(result)-2]
 
     index = 0
     numpy_data = []
     while index <= 5:
         numpy_data.append({
-            'open': result['open'][index+494],
-            'high': result['high'][index+494],
-            'low': result['low'][index+494],
-            'close': result['close'][index+494],
-            'volume': result['volume'][index+494],
-            'ATR_4': result['ATR_4'][index+494],
-            'MA_7_4': result['MA_7_4'][index+494],
-            'pm_4_0_1_4_7': result['pm_4_0.1_4_7'][index+494],
-            'pmX_4_0_1_4_7': result['pmX_4_0.1_4_7'][index+494],
+            'open': result['open'][index+(len(result)-6)],
+            'high': result['high'][index+(len(result)-6)],
+            'low': result['low'][index+(len(result)-6)],
+            'close': result['close'][index+(len(result)-6)],
+            'volume': result['volume'][index+(len(result)-6)],
+            'ATR_4': result['ATR_4'][index+(len(result)-6)],
+            'MA_7_4': result['MA_7_4'][index+(len(result)-6)],
+            'pm_4_0_1_4_7': result['pm_4_0.1_4_7'][index+(len(result)-6)],
+            'pmX_4_0_1_4_7': result['pmX_4_0.1_4_7'][index+(len(result)-6)],
         })
         index += 1  
            
@@ -215,7 +218,7 @@ def do(asset):
                 _buy_price = float(WalletList['buy_price'])
                 _percentage = ((current_price-_buy_price)/current_price)*100
 
-                if(_percentage > 3):
+                if(_percentage > 5):
                     try:
                         if (WalletList['updated_price'] != 0):
                             updated_price_new_array = []
@@ -252,8 +255,8 @@ def do(asset):
                                 WatchList = track.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
                                 WalletList = wallet.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
 
-                                print('WalletList', WalletList)
-                                print('Watchlist', WatchList)
+                                # print('WalletList', WalletList)
+                                # print('Watchlist', WatchList)
 
                                 Notify.notify(asset, 'SATIŞ', 'Trader V2', sound=True)
 
@@ -261,8 +264,8 @@ def do(asset):
 
                                 sold.insert_one({
                                     'asset': asset,
-                                    'pmax': result['pmX_4_0.1_4_7'][499],
-                                    'sold_price': result['close'][499],
+                                    'pmax': result['pmX_4_0.1_4_7'][len(result)-1],
+                                    'sold_price': result['close'][len(result)-1],
                                     'buy_data': WalletList,
                                     'sold_time': datetime.now(),
                                     'candle_data': numpy_data,
@@ -283,7 +286,13 @@ def do(asset):
                         pass
 
 
-                
+    # Eğer artık Pmax geçerli değilse watchlistten çıkar
+    if (last_pmax == current_pmax):
+         if (WatchList != None):
+            track.delete_one({'asset': asset})
+            print("<b><green>Pmax geçerli değil, izleme listesinden çıkarıldı</green>")
+
+        
     if (last_pmax != current_pmax):
         # Satış mantığı, fiyat Pmax'e göre düşüşteyse sat. Bu kısım zarara girmeden satış yapamadı
         if(current_pmax == "down"):
@@ -299,7 +308,7 @@ def do(asset):
                 _percentage = ((current_price-_buy_price)/current_price)*100
 
                 # %3 kâr olmadığı sürece elde tut 
-                if(_percentage > 3):
+                if(_percentage > 5):
                     Notify.notify(asset, 'Satış Alarmı - Pmax', 'Trader V2', sound=True)
                     print("<b><blue>SATILDI</blue> </b>")
                     print("<b><green>Pmax Sinyali</green>")
@@ -309,16 +318,16 @@ def do(asset):
                     WatchList = track.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
                     WalletList = wallet.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
 
-                    print('WalletList', WalletList)
-                    print('Watchlist', WatchList)
+                    # print('WalletList', WalletList)
+                    # print('Watchlist', WatchList)
 
                     Notify.notify(asset, 'SATIŞ', 'Trader V2', sound=True)
                     # Silinecek
-                                
+                    
                     sold.insert_one({
                         'asset': asset,
-                        'pmax': result['pmX_4_0.1_4_7'][499],
-                        'sold_price': result['close'][499],
+                        'pmax': result['pmX_4_0.1_4_7'][len(result)-1],
+                        'sold_price': result['close'][len(result)-1],
                         'buy_data': WalletList,
                         'sold_time': datetime.now(),
                         'candle_data': numpy_data,
@@ -337,8 +346,8 @@ def do(asset):
 
                     track.insert_one({
                         'asset': asset,
-                        'pmax': result['pmX_4_0.1_4_7'][499],
-                        'buy_price': result['close'][499],
+                        'pmax': result['pmX_4_0.1_4_7'][len(result)-1],
+                        'buy_price': result['close'][len(result)-1],
                         'buy_time': datetime.now(),
                         'candle_data': numpy_data,
                         }) 
@@ -357,8 +366,8 @@ def do(asset):
                                 current_price = float(candle['price'])
                     buy_price = WatchList['buy_price']
                     percentage = ((current_price-buy_price)/current_price)*100
-                    if (percentage >= 2):
-                        Notify.notify(asset, 'Alım Sinyali %2', 'Trader V2', sound=True)
+                    if (percentage >= 3):
+                        Notify.notify(asset, 'Alım Sinyali %3', 'Trader V2', sound=True)
                         print("<b><blue>SATIN ALINDI</blue> </b>")
                         print("<b>{}</b>".format(asset))
                         print("<b><fg 0,95,0><white>{}</white></fg 0,95,0></b>".format(result) )
@@ -374,11 +383,11 @@ def do(asset):
         
 i = 0
 while i < len(assets):
-    if (i == 0):
-        print ("<b><yellow>{}</yellow> </b>".format(f.renderText('Trader V2')))
+    # if (i == 0):
+        # print ("<b><yellow>{}</yellow> </b>".format(f.renderText('Trader V2')))
     do(assets[i])
     i += 1
-    time.sleep(5)
+    time.sleep(1)
     if (i == len(assets)):
         print("<b><green>*** Listenin Sonu ***</green> </b>")
         print("<b><yellow>*** Yeniden Başlıyor ***</yellow> </b>")
