@@ -55,50 +55,84 @@ def do():
     candles = client.get_all_tickers()
 
     if args.source == "sold":
-        Table = PrettyTable(['ID','Asset', 'Buy', 'Current', 'Percentage', 'Reason'])
+        Table = PrettyTable(['ID','Asset', 'Buy $', 'Sell $', '%', 'Reason', 'Current $', 'Current %', 'Buy Time', 'Sell Time'])
     else:
-        Table = PrettyTable(['ID','Asset', 'Buy', 'Current', 'Percentage'])
+        Table = PrettyTable(['ID','Asset', 'Buy', 'Current', 'Percentage', 'Date'])
 
     total_percantage = 0
+    current_percentage_if_dont_sold = 0
     count = 0
+    previous_date = ""
     for item in wallet:
-        count = count +1
+        
         
         if args.source == "sold":
             buy_price = float(item['buy_data']['buy_price'])
         else:
             buy_price = float(item['buy_price'])
 
-        
-
+    
+  
         for candle in candles:
             if (candle['symbol'] == item['asset']):
                 current_price = float(candle['price'])
+                current_price_if_dont_sold = float(candle['price'])
                 if args.watch:
                     if item['asset'] in custom_watch_list:
                         if args.source == "sold":
-                            current_price = item['sold_price']
+                            current_price = float(item['sold_price'])
+                            current_percentage_if_dont_sold = ((current_price_if_dont_sold-buy_price)/current_price_if_dont_sold)*100
                         percentage = ((current_price-buy_price)/current_price)*100
                         total_percantage = total_percantage + percentage
+                        if args.source == "sold":
+                            _current_percentage_if_dont_sold = current_percentage_if_dont_sold - percentage
                 else:
                     if args.source == "sold":
-                            current_price = item['sold_price']
+                            current_price = float(item['sold_price'])
+                            current_percentage_if_dont_sold = ((current_price_if_dont_sold-buy_price)/current_price_if_dont_sold)*100
                     percentage = ((current_price-buy_price)/current_price)*100
                     total_percantage = total_percantage + percentage
+                    if args.source == "sold":
+                            _current_percentage_if_dont_sold =  current_percentage_if_dont_sold  - percentage
 
         
         
+        if args.source == "sold":
+            current_date = item['sold_time'].strftime("%d/%m")
+        else:
+            current_date = item['buy_time'].strftime("%d/%m")
+
+        if previous_date != current_date:
+            if args.source == "sold":
+                Table.add_row(["---", "---", "---", "---", "---", "---", "---", "---" , "---", "---"])
+            else:
+                Table.add_row(["---", "---", "---", "---", "---", "---"])
+        
+        previous_date = current_date
+
         if args.watch:
+            
             if item['asset'] in custom_watch_list:
                 if args.source == "sold":
-                    Table.add_row([count, item['asset'], buy_price, current_price, percentage, item['reason'] ])
+                    count = count +1
+                    Table.add_row([count, item['asset'], buy_price, current_price, colored("%.2f" % round(percentage, 2), 'green', attrs=['bold']), item['reason'].split('alama')[0], current_price_if_dont_sold, colored("%.2f" % round(_current_percentage_if_dont_sold, 2), 'red', attrs=['bold']) , item['buy_data']['buy_time'].strftime("%d/%m %H:%M"), item['sold_time'].strftime("%d/%m %H:%M")])
                 else:
-                    Table.add_row([count, item['asset'], buy_price, current_price, percentage ])
+                    count = count +1
+                    if percentage < 0: 
+                        Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'red', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white')   ])
+                    else:
+                        Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'green', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white')   ])
+
         else:
             if args.source == "sold":
-                Table.add_row([count, item['asset'], buy_price, current_price, percentage, item['reason'] ])
+                count = count +1
+                Table.add_row([count, item['asset'], buy_price, current_price, colored("%.2f" % round(percentage, 2), 'green', attrs=['bold'])  , item['reason'].split('alama')[0], current_price_if_dont_sold, colored("%.2f" % round(_current_percentage_if_dont_sold, 2), 'red', attrs=['bold']), item['buy_data']['buy_time'].strftime("%d/%m %H:%M"), item['sold_time'].strftime("%d/%m %H:%M")])
             else:
-                Table.add_row([count, item['asset'], buy_price, current_price, percentage ])
+                count = count +1
+                if percentage < 0: 
+                    Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'red', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white')   ])
+                else:
+                    Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'green', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white')   ])
 
     
     if args.sort:
@@ -109,8 +143,9 @@ def do():
         if args.reverse in ("False"):
             Table.reversesort = False
     
+    
 
-    print ("<b><red>{}</red> </b>".format(f.renderText('Trader V2')))
+    # print ("<b><red>{}</red> </b>".format(f.renderText('Trader V2')))
     print("<b><yellow>*** CÜZDAN ({}) ***</yellow> </b>".format(type_of_wallet))
     print("<b><fg 0,95,0><white>{}</white></fg 0,95,0></b>".format(Table) )
 
@@ -120,8 +155,8 @@ def do():
     print("<b><blue>Farkların Toplamı</blue> </b><b><yellow>{}</yellow></b>".format(total_percantage) )
     print("<b><red>*** Diğer Cüzdanlar ***</red> </b>")
     print("<b><green>İzleme Listesi</green> </b><b><yellow>{}</yellow></b>".format(db.track.count_documents({})) )
-    print("<b><green>Alım Cüzdanı</green> </b><b><yellow>{}</yellow></b>".format(db.wallet.count_documents({})) )
-    print("<b><green>Satış Cüzdanı</green> </b><b><yellow>{}</yellow></b>".format(db.sold.count_documents({})) )
+    print("<b><green>Alış</green> </b><b><yellow>{}</yellow></b>".format(db.wallet.count_documents({})) )
+    print("<b><green>Satış</green> </b><b><yellow>{}</yellow></b>".format(db.sold.count_documents({})) )
 
     
 
