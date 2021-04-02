@@ -377,7 +377,7 @@ def do(asset):
                 _buy_price = float(WalletList['buy_price'])
                 _percentage = ((current_price-_buy_price)/current_price)*100
 
-                # %3 kâr olmadığı sürece elde tut 
+                # %5 kâr olmadığı sürece elde tut 
                 if(_percentage > 5):
                     Notify.notify(asset, 'Satış Alarmı - Pmax', 'Trader V2', sound=True)
                     print("<b><blue>SATILDI</blue> </b>")
@@ -436,7 +436,7 @@ def do(asset):
                                 current_price = float(candle['price'])
                     buy_price = WatchList['buy_price']
                     percentage = ((current_price-buy_price)/current_price)*100
-                    if (percentage >= 2):
+                    if (percentage >= 0):
 
                         # 1 günlük ve 15 dakikalık check
                         time.sleep(1)
@@ -447,22 +447,23 @@ def do(asset):
                         current_pmax_15Min = result15Min['pmX_4_0.1_4_7'][len(result15Min)-5],result15Min['pmX_4_0.1_4_7'][len(result15Min)-4],result15Min['pmX_4_0.1_4_7'][len(result15Min)-3],result15Min['pmX_4_0.1_4_7'][len(result15Min)-2],result15Min['pmX_4_0.1_4_7'][len(result15Min)-1]
                         
                         # 1 günlük ve 15 dakikalık UP durumunda alım yapılır
-                        if result1Day['pmX_4_0.1_4_7'][len(result1Day)-1] == 'up' and result15Min['pmX_4_0.1_4_7'][len(result15Min)-1] == 'up' : 
-                            # Notify.notify(asset, 'Alım Sinyali %3', 'Trader V2', sound=True)
-                            Notify.notify(asset, 'Alım Sinyali 1G 4H 15M', 'Trader V2', sound=True)
-                            print("<b><blue>SATIN ALINDI 1G 4H 15M </blue> </b>")
-                            print("<b>{}</b>".format(asset))
-                            print("<b><fg 0,95,0><white>{}</white></fg 0,95,0></b>".format(result) )
-                            wallet.insert_one({
-                                'asset': asset,
-                                'buy_price': current_price,
-                                'buy_time': datetime.now(),
-                                'track_data' :WatchList,
-                                'candle_data': numpy_data,
-                                'current_pmax_1Day': current_pmax_1Day,
-                                'current_pmax_15Min': current_pmax_15Min
-                                })
-                            track.delete_one({'asset': asset})
+                        if result1Day['pmX_4_0.1_4_7'][len(result1Day)-2] == 'down' and result1Day['pmX_4_0.1_4_7'][len(result1Day)-1] == 'up':
+                            if result15Min['pmX_4_0.1_4_7'][len(result15Min)-2] == 'down' and result15Min['pmX_4_0.1_4_7'][len(result15Min)-1] == 'up':
+                                # Notify.notify(asset, 'Alım Sinyali %3', 'Trader V2', sound=True)
+                                Notify.notify(asset, 'Alım Sinyali - Her yer Pmax', 'Trader V2', sound=True)
+                                print("<b><blue>SATIN ALINDI Her yer Pmax </blue> </b>")
+                                print("<b>{}</b>".format(asset))
+                                print("<b><fg 0,95,0><white>{}</white></fg 0,95,0></b>".format(result) )
+                                wallet.insert_one({
+                                    'asset': asset,
+                                    'buy_price': current_price,
+                                    'buy_time': datetime.now(),
+                                    'track_data' :WatchList,
+                                    'candle_data': numpy_data,
+                                    'current_pmax_1Day': current_pmax_1Day,
+                                    'current_pmax_15Min': current_pmax_15Min
+                                    })
+                                track.delete_one({'asset': asset})
 
         
 i = 0
