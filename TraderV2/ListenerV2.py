@@ -436,7 +436,7 @@ def do(asset):
                                 current_price = float(candle['price'])
                     buy_price = WatchList['buy_price']
                     percentage = ((current_price-buy_price)/current_price)*100
-                    if (percentage >= 0):
+                    if (percentage >= 2):
 
                         # 1 günlük ve 15 dakikalık check
                         time.sleep(1)
