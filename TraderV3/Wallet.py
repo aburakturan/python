@@ -28,7 +28,7 @@ args = parser.parse_args()
 
 
 client = MongoClient('localhost',27017)  
-db = client.pmaxV2
+db = client.pmaxV3
 
 if args.source == "watch":
     type_of_wallet = "Watch List"
@@ -122,9 +122,12 @@ def do():
         else:
             if args.source == "sold":
                 count = count +1
-                
+                if (percentage >= 0):
+                    _color = "blue"
+                else:  
+                    _color = "red"
 
-                Table.add_row([count, item['asset'], buy_price, current_price, colored("%.2f" % round(percentage, 2), 'green', attrs=['bold'])  , item['reason'].split('alama')[0], current_price_if_dont_sold, colored("%.2f" % round(_current_percentage_if_dont_sold, 2), 'red', attrs=['bold']), item['buy_data']['buy_time'].strftime("%d/%m %H:%M"), item['sold_time'].strftime("%d/%m %H:%M")])
+                Table.add_row([count, item['asset'], buy_price, current_price, colored("%.2f" % round(percentage, 2), _color, attrs=['bold'])  , item['reason'].split('alama')[0], current_price_if_dont_sold, colored("%.2f" % round(_current_percentage_if_dont_sold, 2), 'red', attrs=['bold']), item['buy_data']['buy_time'].strftime("%d/%m %H:%M"), item['sold_time'].strftime("%d/%m %H:%M")])
             else:
                 count = count +1
                 Table.add_row([count, item['asset'], buy_price, current_price, percentage, item['buy_time'].strftime("%d/%m %H:%M")   ])

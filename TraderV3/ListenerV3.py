@@ -242,7 +242,7 @@ def do(asset):
             #  UP ise
             if (WatchList == None):   # Takip listesinde değilse
                 if (WalletList == None): # Cüzdanda değilse
-                    Notify.notify(asset, 'WatchList Aktif', 'Trader V3', sound=True)
+                    # Notify.notify(asset, 'WatchList Aktif', 'Trader V3', sound=True)
 
                     print("<b><green>Takip Listesine Alındı</green> </b>")
                     print("<b>{}</b>".format(asset))
@@ -271,7 +271,7 @@ def do(asset):
                     buy_price = WatchList['buy_price']
                     percentage = ((current_price-buy_price)/current_price)*100
                     if (percentage >= 3):
-                        Notify.notify(asset, 'Alım Sinyali %3', 'Trader V3', sound=True)
+                        # Notify.notify(asset, 'Alım Sinyali %3', 'Trader V3', sound=True)
                         print("<b><blue>SATIN ALINDI</blue> </b>")
                         print("<b>{}</b>".format(asset))
                         print("<b><fg 0,95,0><white>{}</white></fg 0,95,0></b>".format(result) )

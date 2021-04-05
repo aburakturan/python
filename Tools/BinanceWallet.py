@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import sys, getopt
 import time
+
 from datetime import datetime
 import json
 from sys import maxsize
@@ -16,7 +17,7 @@ import argparse
 import json
 import telegram
 from termcolor import colored
-
+import subprocess
 
 def notify_ending(message):
     
@@ -41,6 +42,8 @@ set_printoptions(threshold=maxsize)
 
 client = Client('4LdqnhvqK0rg5f4KKIPpfhAdD9PG7fKF4ssNHqWazHL0GepGjTPXKhmUFz2Db8oG', 'ua55ROqNp0CbohbcrL5McfZg7ALr6wlxRS9Kc43feGfKWn3Bv6M6XggONjhlqXYG')
 # client = Client('0o8vTST2w4uH5cOfwoGhBqFySy04jFHGQ9yHZHdESFFpyCWQDCnH9aaJSekVfDGq', 'PTdpxSlAFsbnY5Qn3djGvKWO2MPJF7wNpnSTdE7XWhQ0JIxODp5c18BC1MYfCZOn')
+
+
 
 parser = argparse.ArgumentParser()
 
@@ -67,7 +70,7 @@ if args.watch:
 def binanceWalletList():
     prices = client.get_all_tickers()
     # Table = PrettyTable(['ID','Asset', 'Total Buy Price', 'Total Current Price', 'Percentage'])
-    Table = PrettyTable(['ID','Asset', 'Percentage'])
+    Table = PrettyTable(['ID','Asset', 'Percentage', 'Total Buy Price', 'Total Current Price', 'Profit'])
 
     acc = client.get_account()
     # balances = acc['balances']
@@ -101,11 +104,13 @@ def binanceWalletList():
                     percentage = ((total_current_price-total_buy_price)/total_current_price)*100
                     total_percantage = total_percantage + percentage
                     if percentage > 0:
-                        Table.add_row([count,balance['asset'] ,  colored("%.2f" % round(float(percentage), 2), 'green', attrs=['bold']) ])
+                        Table.add_row([count,balance['asset'] ,  colored("%.2f" % round(float(percentage), 2), 'green', attrs=['bold']), total_buy_price, total_current_price, total_buy_price - total_current_price])
                     else:
-                        Table.add_row([count,balance['asset'] ,  colored("%.2f" % round(float(percentage), 2), 'red', attrs=['bold']) ])
+                        Table.add_row([count,balance['asset'] ,  colored("%.2f" % round(float(percentage), 2), 'red', attrs=['bold']), total_buy_price, total_current_price, total_buy_price - total_current_price ])
                     if percentage > 5:
-                        notify_ending("{} Binance Wallet %5'i geçti - {}".format(balance['asset'], percentage))
+                        notify_ending("{} Binance Wallet - {}".format(balance['asset'], percentage))
+                        # subprocess.call('python3 BinanceWalletWatchToSell.py', shell=True)
+
 
         
     if args.sort:
@@ -139,6 +144,7 @@ def binanceWalletRecord():
     for balance in balances:
         if float(balance['free']) > 0 or float(balance['locked']) > 0:
             if balance['asset'] != 'BNB' and balance['asset'] != 'USDT' and balance['asset'] != 'LDDOGE':
+                # print(balance)
                 count = count +1
                 symbol = "{}USDT".format(balance['asset'])
                 trades = client.get_my_trades(symbol=symbol)
@@ -158,20 +164,19 @@ def binanceWalletRecord():
                         total_current_price = qty * current_price
 
                 
-                if (total_buy_price <= 10):
-                    count -= 1
-                else:
-                    percentage = ((total_current_price-total_buy_price)/total_current_price)*100
-                    total_percantage = total_percantage + percentage
-                    wallet.insert_one({
-                        'asset': balance['asset'],
-                        'qty':qty,
-                        'total_buy_price': total_buy_price,
-                        'buy_price': buy_price,
-                        'total_current_price': total_current_price,
-                        'percentage': percentage
-                        }) 
-                    print("<b><blue>Cüzdan güncelleniyor:</blue> </b><b><yellow> {} </yellow></b>".format(balance['asset']) )
+                
+                percentage = ((total_current_price-total_buy_price)/total_current_price)*100
+                total_percantage = total_percantage + percentage
+                wallet.insert_one({
+                    'asset': balance['asset'],
+                    'qty':qty,
+                    'total_buy_price': total_buy_price,
+                    'buy_price': buy_price,
+                    'total_current_price': total_current_price,
+                    'percentage': percentage,
+                    'updated_price': 0
+                    }) 
+                print("<b><blue>Cüzdan güncelleniyor:</blue> </b><b><yellow> {} </yellow></b>".format(balance['asset']) )
 
                     
 
@@ -194,4 +199,7 @@ elif args.wallet:
         binanceWalletList()
         time.sleep(300)
 
-        
+
+
+
+         

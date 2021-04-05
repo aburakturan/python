@@ -17,10 +17,16 @@ f = Figlet(font='slant')
 client = MongoClient('localhost',27017)  
 # client = MongoClient('mongodb+srv://ahmetburak:og1LCXX4VCw7RYV7@cluster0.ygftz.mongodb.net/')  
 
-db = client.pmaxV2
+db = client.simulationV1
 track = db.track
 wallet = db.wallet
 sold = db.sold
+hotwallet = db.hotwallet
+
+
+# Settings
+wallet_limit = 5
+tether = 500
 
 set_printoptions(threshold=maxsize)
 
@@ -31,10 +37,18 @@ def setInterval(func,time):
  
 client = Client('jjIP0g5xq7S1HjBSHLH1Eizw1qpPO0HxUm1P3CqlGUFKKmb7T4vLj7B6AYbqtEgu', '6W9hO9vrVWjMkThl2stbv0OR80Sl83GpkWzwYsIrOrAvPEVTQStLfKbc3bUasttg')
 
-def getCandles(asset):
-    df = pd.DataFrame(columns= ['date', 'open', 'high', 'low', 'close', 'volume'])
-    
 
+per = int(tether/wallet_limit)
+# Gerçek USDT bakiyesini kontrol ediyor
+hotwallet_check = hotwallet.find_one({'asset': 'USDT'},sort=[( '_id', DESCENDING )])
+available = hotwallet_check['qty']
+hotwalletdb = db.hotwallet
+
+def getCandles(asset):
+
+    
+    
+    df = pd.DataFrame(columns= ['date', 'open', 'high', 'low', 'close', 'volume'])
     try:
         candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_4HOUR)
     except:
@@ -45,8 +59,6 @@ def getCandles(asset):
         candles = client.get_klines(symbol=asset, interval=Client.KLINE_INTERVAL_4HOUR)
         pass
         
-    
-
     opentime, lopen, lhigh, llow, lclose, lvol, closetime = [], [], [], [], [], [], []
 
     for candle in candles:
@@ -212,8 +224,24 @@ def PMAX(dataframe, period=4, multiplier=0.1, length=4, MAtype=7, src=1):
 # GBPUSDT, USDTZAR  //sabit coinler
 
 assets = ["TRUUSDT", "CKBUSDT", "TWTUSDT", "LITUSDT", "DODOUSDT", "BADGERUSDT", "FISUSDT", "LINAUSDT", "PERPUSDT", "SUPERUSDT", "VENUSDT", "BKRWUSDT", "DAIUSDT", "CELOUSDT", "RIFUSDT", "BTCSTUSDT", "FIROUSDT", "SFPUSDT", "CAKEUSDT", "ACMUSDT", "OMUSDT", "PONDUSDT", "DEGOUSDT", "ALICEUSDT", "RAMPUSDT",   "DCRUSDT", "STORJUSDT", "MANAUSDT", "AUDUSDT", "YFIUSDT", "BALUSDT", "BLZUSDT", "IRISUSDT", "KMDUSDT", "JSTUSDT", "SRMUSDT", "ANTUSDT", "CRVUSDT", "SANDUSDT", "OCEANUSDT", "NMRUSDT", "DOTUSDT", "LUNAUSDT", "RSRUSDT", "PAXGUSDT", "WNXMUSDT", "TRBUSDT", "BZRXUSDT", "SUSHIUSDT", "YFIIUSDT", "KSMUSDT", "EGLDUSDT", "DIAUSDT", "RUNEUSDT", "FIOUSDT", "UMAUSDT", "BELUSDT", "WINGUSDT", "UNIUSDT", "NBSUSDT", "OXTUSDT", "SUNUSDT", "AVAXUSDT", "HNTUSDT", "FLMUSDT", "ORNUSDT", "UTKUSDT", "XVSUSDT", "ALPHAUSDT", "AAVEUSDT", "NEARUSDT", "FILUSDT", "INJUSDT", "AUDIOUSDT", "CTKUSDT", "AKROUSDT", "AXSUSDT", "HARDUSDT", "DNTUSDT", "STRAXUSDT", "UNFIUSDT", "ROSEUSDT", "AVAUSDT", "XEMUSDT", "SKLUSDT", "SUSDUSDT", "GRTUSDT", "JUVUSDT", "PSGUSDT", "1INCHUSDT", "REEFUSDT", "OGUSDT", "ATMUSDT", "ASRUSDT", "SCUSDT", "ZENUSDT", "SNXUSDT", "VTHOUSDT", "DGBUSDT", "SXPUSDT", "MKRUSDT", "TCTUSDT", "WRXUSDT", "BTSUSDT", "LSKUSDT", "BNTUSDT", "LTOUSDT", "STRATUSDT", "AIONUSDT", "MBLUSDT", "COTIUSDT", "STPTUSDT", "WTCUSDT", "DATAUSDT", "SOLUSDT",  "CTSIUSDT", "HIVEUSDT", "CHRUSDT", "GXSUSDT", "ARDRUSDT", "MDTUSDT", "STMXUSDT", "KNCUSDT", "REPUSDT", "LRCUSDT", "PNTUSDT", "COMPUSDT", "BTCUSDT", "ETHUSDT", "BNBUSDT", "BCCUSDT", "NEOUSDT", "LTCUSDT", "QTUMUSDT", "ADAUSDT", "XRPUSDT", "EOSUSDT", "IOTAUSDT", "XLMUSDT", "ONTUSDT", "TRXUSDT", "ETCUSDT", "ICXUSDT", "NULSUSDT", "VETUSDT", "BCHABCUSDT", "LINKUSDT", "WAVESUSDT", "BTTUSDT", "USDSUSDT", "HOTUSDT", "ZILUSDT", "ZRXUSDT", "FETUSDT", "BATUSDT", "XMRUSDT", "ZECUSDT", "IOSTUSDT", "CELRUSDT", "DASHUSDT", "NANOUSDT", "OMGUSDT", "THETAUSDT", "ENJUSDT", "MITHUSDT", "MATICUSDT", "ATOMUSDT", "TFUELUSDT", "ONEUSDT", "FTMUSDT", "ALGOUSDT", "GTOUSDT", "DOGEUSDT", "DUSKUSDT", "ANKRUSDT", "WINUSDT", "COSUSDT", "NPXSUSDT", "COCOSUSDT", "MTLUSDT", "TOMOUSDT", "PERLUSDT", "DENTUSDT", "MFTUSDT", "KEYUSDT", "STORMUSDT", "DOCKUSDT", "WANUSDT", "FUNUSDT", "CVCUSDT", "CHZUSDT", "BANDUSDT", "BEAMUSDT", "XTZUSDT", "RENUSDT", "RVNUSDT", "HCUSDT", "HBARUSDT", "NKNUSDT", "STXUSDT", "KAVAUSDT", "ARPAUSDT", "IOTXUSDT", "RLCUSDT", "MCOUSDT", "CTXCUSDT", "BCHUSDT", "TROYUSDT", "VITEUSDT", "FTTUSDT", "OGNUSDT", "DREPUSDT"]
+wallet_assets = []
+
+
+
+def walletAssets():
+    wallet_assets_db = hotwalletdb.find({})
+    for wallet_item in wallet_assets_db:
+        if wallet_item['asset'] != 'BNB' and wallet_item['asset'] != 'USDT' and wallet_item['asset'] != 'LDDOGE':
+            if wallet_item['qty'] != 0:
+                wallet_assets.append(wallet_item['asset'])
+
+walletAssets()
+    
+
 # 197 asset
 def do(asset):
+
+    walletAssets()
 
     # sys.stdout.write(asset)
     
@@ -266,9 +294,8 @@ def do(asset):
                     print("<b>{}</b>".format(asset))
                          
                 
-    
-    # Satış kontrolü,  fiyat ortalaması son fiyatın altına düşerse sat
 
+    # Satış kontrolü,  fiyat ortalaması son fiyatın altına düşerse sat
     if (WalletList != None):  # Cüzdandaysa
         time.sleep(1)
         Prices = client.get_all_tickers()
@@ -276,17 +303,106 @@ def do(asset):
             if (price['symbol'] == asset):
                 current_price = float(price['price'])
 
+                # updated_price_new_array=[]
+                # updated_price_new_array.append(current_price)
+
+                # condition = { "asset": asset }
+                # update_data = { "$set": { "updated_price": updated_price_new_array } }
+                # wallet.update_one(condition, update_data)
+                
+
+                
+                 
                 _buy_price = float(WalletList['buy_price'])
                 _percentage = ((current_price-_buy_price)/current_price)*100
                 
                 # %5 kâr olmadığı sürece elde tut
-                if(_percentage > 5):
-
+                if(_percentage > 3):
                     try:
                         if (WalletList['updated_price'] != 0):
-                            print('WalletList[updated_price] != 0')
+                            updated_price_new_array = []
+                            wallet_updated_price = WalletList['updated_price']
+                            total_wallet_updated_price = 0
+                            for u_price in wallet_updated_price:
+                                updated_price_new_array.append(float(u_price))
+                                total_wallet_updated_price += float(u_price)
+                            
+                            updated_price_new_array.append(current_price)
+                            total_wallet_updated_price += current_price
+
+
+                            average_of_updated_prices = total_wallet_updated_price / len(updated_price_new_array)
+                            last_updated_price = updated_price_new_array[len(updated_price_new_array)-1]
+                            
+                            
+                            print("<b><red>average_of_updated_prices</red> </b><b><yellow>{}</yellow></b>".format(average_of_updated_prices) )
+                            print("<b><red>last_updated_price</red> </b><b><yellow>{}</yellow></b>".format(last_updated_price) )
+
+                            if len(updated_price_new_array) >= 5:
+                                print('len(updated_price_new_array)', len(updated_price_new_array))
+                                # if (average_of_updated_prices - ((average_of_updated_prices/100)*20) > last_updated_price): 
+                                if (average_of_updated_prices > last_updated_price): 
+                                    condition = { "asset": asset }
+                                    update_data = { "$set": { "updated_price": updated_price_new_array } }
+                                    wallet.update_one(condition, update_data)
+                                else:
+                                    Notify.notify(asset, 'Satış Alarmı - Ortalama', 'Trader Sim - 1', sound=True)
+                                    print("<b><blue>SATILDI</blue> </b>")
+                                    print("<b><green>Ortalama düştü</green>")
+                                    print("<b>{}</b>".format(asset))
+                                    
+
+                                    # Silinecek
+
+                                    WatchList = track.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
+                                    WalletList = wallet.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
+
+                                    # print('WalletList', WalletList)
+                                    # print('Watchlist', WatchList)
+
+                                    # Notify.notify(asset, 'SATIŞ', 'Trader V2', sound=True)
+
+                                    # Silinecek
+
+                                    sold.insert_one({
+                                        'asset': asset,
+                                        'pmax': result['pmX_4_0.1_4_7'][len(result)-1],
+                                        'sold_price': result['close'][len(result)-1],
+                                        'buy_data': WalletList,
+                                        'sold_time': datetime.now(),
+                                        'candle_data': numpy_data,
+                                        'reason': 'Ortalama',
+                                        }) 
+                                    wallet.delete_one({'asset': asset})
+
+
+                                    #  Gerçek satış durumunda bakiyeler güncelleniyor
+                                    hotwallet_check = hotwallet.find_one({'asset': 'USDT'},sort=[( '_id', DESCENDING )])
+                                    available = hotwallet_check['qty']
+
+
+
+                                    hotwallet_asset_check = hotwallet.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
+                                    tether_qty_sell = hotwallet_asset_check['qty'] * float(result['close'][len(result)-1])
+
+                                    hotwallet_check_for_current_qty = hotwallet.find_one({'asset': 'USDT'},sort=[( '_id', DESCENDING )])
+
+
+                                    hotwallet_tether_new_qty = hotwallet_check_for_current_qty['qty'] + tether_qty_sell
+                                        
+
+                                    condition = { "asset": asset }
+                                    update_data = { "$set": { "qty": 0 } }
+                                    hotwallet.update_one(condition, update_data)
+
+                                    condition = { "asset": 'USDT' }
+                                    update_data = { "$set": { "qty": hotwallet_tether_new_qty } }
+                                    hotwallet.update_one(condition, update_data)
+
+
+
+
                     except:
-                        print('updated_price_init = []')
                         updated_price_init = []
                         
                         try:
@@ -298,170 +414,6 @@ def do(asset):
                         update_data = { "$set": { "updated_price": updated_price_init } }
                         wallet.update_one(condition, update_data)
                         pass
-                    
-                    WalletList = wallet.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
-                    if (WalletList['updated_price'] != 0):
-                        updated_price_new_array = []
-                        wallet_updated_price = WalletList['updated_price']
-                        total_wallet_updated_price = 0
-                        for u_price in wallet_updated_price:
-                            updated_price_new_array.append(float(u_price))
-                            total_wallet_updated_price += float(u_price)
-                        
-                        updated_price_new_array.append(current_price)
-                        total_wallet_updated_price += current_price
-
-
-                        average_of_updated_prices = total_wallet_updated_price / len(updated_price_new_array)
-                        last_updated_price = updated_price_new_array[len(updated_price_new_array)-1]
-                        
-                        print("<b><red>average_of_updated_prices</red> </b><b><yellow>{}</yellow></b>".format(average_of_updated_prices) )
-                        print("<b><red>last_updated_price</red> </b><b><yellow>{}</yellow></b>".format(last_updated_price) )
-
-                        
-                        # if (average_of_updated_prices - ((average_of_updated_prices/100)*20) > last_updated_price): 
-                        print('BEFORE len(updated_price_new_array)', len(updated_price_new_array))
-
-                        if len(updated_price_new_array) >= 3:
-                            print('len(updated_price_new_array)', len(updated_price_new_array))
-                            if (average_of_updated_prices > last_updated_price): 
-                                condition = { "asset": asset }
-                                update_data = { "$set": { "updated_price": updated_price_new_array } }
-                                wallet.update_one(condition, update_data)
-                            else:
-                                Notify.notify(asset, 'Satış Alarmı - Ortalama', 'Listener2', sound=True)
-                                print("<b><blue>SATILDI</blue> </b>")
-                                print("<b><green>Ortalama düştü</green>")
-                                print("<b>{}</b>".format(asset))
-                                
-                                WatchList = track.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
-                                WalletList = wallet.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
-
-                                sold.insert_one({
-                                    'asset': asset,
-                                    'pmax': result['pmX_4_0.1_4_7'][len(result)-1],
-                                    'sold_price': result['close'][len(result)-1],
-                                    'buy_data': WalletList,
-                                    'sold_time': datetime.now(),
-                                    'candle_data': numpy_data,
-                                    'reason': 'Ortalama',
-                                    }) 
-                                wallet.delete_one({'asset': asset})
-
-                               
-                        else:
-                            condition = { "asset": asset }
-                            update_data = { "$set": { "updated_price": updated_price_new_array } }
-                            wallet.update_one(condition, update_data)
-
-
-                    else:
-                        updated_price_init = []
-                        
-                        try:
-                            updated_price_init.append(current_price)
-                        except:
-                            updated_price_init.append(0)
-                            pass
-                        condition = { "asset": asset }
-                        update_data = { "$set": { "updated_price": updated_price_init } }
-                        wallet.update_one(condition, update_data)
-                        pass
-
-
-
-
-
-
-
-
-    # Satış kontrolü,  fiyat ortalaması son fiyatın altına düşerse sat
-    # if (WalletList != None):  # Cüzdandaysa
-    #     time.sleep(1)
-    #     Prices = client.get_all_tickers()
-    #     for price in Prices:
-    #         if (price['symbol'] == asset):
-    #             current_price = float(price['price'])
-
-    #             # updated_price_new_array=[]
-    #             # updated_price_new_array.append(current_price)
-
-    #             # condition = { "asset": asset }
-    #             # update_data = { "$set": { "updated_price": updated_price_new_array } }
-    #             # wallet.update_one(condition, update_data)
-                
-
-                
-    #             # %3 kâr olmadığı sürece elde tut 
-    #             _buy_price = float(WalletList['buy_price'])
-    #             _percentage = ((current_price-_buy_price)/current_price)*100
-
-    #             if(_percentage > 5):
-    #                 try:
-    #                     if (WalletList['updated_price'] != 0):
-    #                         updated_price_new_array = []
-    #                         wallet_updated_price = WalletList['updated_price']
-    #                         total_wallet_updated_price = 0
-    #                         for u_price in wallet_updated_price:
-    #                             updated_price_new_array.append(float(u_price))
-    #                             total_wallet_updated_price += float(u_price)
-                            
-    #                         updated_price_new_array.append(current_price)
-    #                         total_wallet_updated_price += current_price
-
-
-    #                         average_of_updated_prices = total_wallet_updated_price / len(updated_price_new_array)
-    #                         last_updated_price = updated_price_new_array[len(updated_price_new_array)-1]
-                            
-    #                         print("<b><red>average_of_updated_prices</red> </b><b><yellow>{}</yellow></b>".format(average_of_updated_prices) )
-    #                         print("<b><red>last_updated_price</red> </b><b><yellow>{}</yellow></b>".format(last_updated_price) )
-
-                            
-    #                         if (average_of_updated_prices - ((average_of_updated_prices/100)*20) > last_updated_price): 
-    #                             condition = { "asset": asset }
-    #                             update_data = { "$set": { "updated_price": updated_price_new_array } }
-    #                             wallet.update_one(condition, update_data)
-    #                         else:
-    #                             Notify.notify(asset, 'Satış Alarmı - Ortalama', 'Trader V2', sound=True)
-    #                             print("<b><blue>SATILDI</blue> </b>")
-    #                             print("<b><green>Ortalama düştü</green>")
-    #                             print("<b>{}</b>".format(asset))
-                                
-
-    #                             # Silinecek
-
-    #                             WatchList = track.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
-    #                             WalletList = wallet.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
-
-    #                             # print('WalletList', WalletList)
-    #                             # print('Watchlist', WatchList)
-
-    #                             # Notify.notify(asset, 'SATIŞ', 'Trader V2', sound=True)
-
-    #                             # Silinecek
-
-    #                             sold.insert_one({
-    #                                 'asset': asset,
-    #                                 'pmax': result['pmX_4_0.1_4_7'][len(result)-1],
-    #                                 'sold_price': result['close'][len(result)-1],
-    #                                 'buy_data': WalletList,
-    #                                 'sold_time': datetime.now(),
-    #                                 'candle_data': numpy_data,
-    #                                 'reason': 'Ortalama',
-    #                                 }) 
-    #                             wallet.delete_one({'asset': asset})
-    #                 except:
-    #                     updated_price_init = []
-                        
-    #                     try:
-    #                         updated_price_init.append(current_price)
-    #                     except:
-    #                         updated_price_init.append(0)
-    #                         pass
-    #                     condition = { "asset": asset }
-    #                     update_data = { "$set": { "updated_price": updated_price_init } }
-    #                     wallet.update_one(condition, update_data)
-    #                     pass
 
 
     # Eğer artık Pmax geçerli değilse watchlistten çıkar
@@ -486,8 +438,8 @@ def do(asset):
                 _percentage = ((current_price-_buy_price)/current_price)*100
 
                 # %5 kâr olmadığı sürece elde tut 
-                if(_percentage > 5):
-                    Notify.notify(asset, 'Satış Alarmı - Pmax', 'Trader V2', sound=True)
+                if(_percentage > 3):
+                    Notify.notify(asset, 'Satış Alarmı - Pmax', 'Trader Sim - 1', sound=True)
                     print("<b><blue>SATILDI</blue> </b>")
                     print("<b><green>Pmax Sinyali</green>")
                     print("<b>{}</b>".format(asset))
@@ -499,7 +451,6 @@ def do(asset):
                     # print('WalletList', WalletList)
                     # print('Watchlist', WatchList)
 
-                    Notify.notify(asset, 'SATIŞ', 'Trader V2', sound=True)
                     # Silinecek
                     
                     sold.insert_one({
@@ -512,6 +463,27 @@ def do(asset):
                         'reason': 'Pmax',
                         }) 
                     wallet.delete_one({'asset': asset})  
+
+
+                    #  Gerçek satış durumunda bakiyeler güncelleniyor
+                    hotwallet_check = hotwallet.find_one({'asset': 'USDT'},sort=[( '_id', DESCENDING )])
+                    available = hotwallet_check['qty']
+
+                    hotwallet_asset_check = hotwallet.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
+                    tether_qty_sell = hotwallet_asset_check['qty'] * float(result['close'][len(result)-1])
+
+                    hotwallet_check_for_current_qty = hotwallet.find_one({'asset': 'USDT'},sort=[( '_id', DESCENDING )])
+
+                    hotwallet_tether_new_qty = hotwallet_check_for_current_qty['qty'] + tether_qty_sell
+                            
+                    condition = { "asset": asset }
+                    update_data = { "$set": { "qty": 0 } }
+                    hotwallet.update_one(condition, update_data)
+
+                    condition = { "asset": 'USDT' }
+                    update_data = { "$set": { "qty": hotwallet_tether_new_qty } }
+                    hotwallet.update_one(condition, update_data)
+
         else:
             #  UP ise
             if (WatchList == None):   # Takip listesinde değilse
@@ -520,7 +492,7 @@ def do(asset):
 
                     print("<b><green>Takip Listesine Alındı</green> </b>")
                     print("<b>{}</b>".format(asset))
-                    print("<b><fg 0,95,0><white>{}</white></fg 0,95,0></b>".format(result) )
+                    # print("<b><fg 0,95,0><white>{}</white></fg 0,95,0></b>".format(result) )
 
                     track.insert_one({
                         'asset': asset,
@@ -544,21 +516,33 @@ def do(asset):
                                 current_price = float(candle['price'])
                     buy_price = WatchList['buy_price']
                     percentage = ((current_price-buy_price)/current_price)*100
-                    if (percentage >= 0):
+                    if (percentage >= 2):
 
-                        # 1 günlük ve 15 dakikalık check
-                        time.sleep(1)
-                        result1Day = PMAX(getCandles1Day(asset))
-                        time.sleep(1)
-                        result15Min = PMAX(getCandles15Min(asset))
-                        current_pmax_1Day = result1Day['pmX_4_0.1_4_7'][len(result1Day)-5],result1Day['pmX_4_0.1_4_7'][len(result1Day)-4],result1Day['pmX_4_0.1_4_7'][len(result1Day)-3],result1Day['pmX_4_0.1_4_7'][len(result1Day)-2],result1Day['pmX_4_0.1_4_7'][len(result1Day)-1]
-                        current_pmax_15Min = result15Min['pmX_4_0.1_4_7'][len(result15Min)-5],result15Min['pmX_4_0.1_4_7'][len(result15Min)-4],result15Min['pmX_4_0.1_4_7'][len(result15Min)-3],result15Min['pmX_4_0.1_4_7'][len(result15Min)-2],result15Min['pmX_4_0.1_4_7'][len(result15Min)-1]
+                        
+
+                        # # 1 günlük ve 15 dakikalık check
+                        # time.sleep(1)
+                        # result1Day = PMAX(getCandles1Day(asset))
+                        # time.sleep(1)
+                        # result15Min = PMAX(getCandles15Min(asset))
+                        # current_pmax_1Day = result1Day['pmX_4_0.1_4_7'][len(result1Day)-5],result1Day['pmX_4_0.1_4_7'][len(result1Day)-4],result1Day['pmX_4_0.1_4_7'][len(result1Day)-3],result1Day['pmX_4_0.1_4_7'][len(result1Day)-2],result1Day['pmX_4_0.1_4_7'][len(result1Day)-1]
+                        # current_pmax_15Min = result15Min['pmX_4_0.1_4_7'][len(result15Min)-5],result15Min['pmX_4_0.1_4_7'][len(result15Min)-4],result15Min['pmX_4_0.1_4_7'][len(result15Min)-3],result15Min['pmX_4_0.1_4_7'][len(result15Min)-2],result15Min['pmX_4_0.1_4_7'][len(result15Min)-1]
                         
                         # 1 günlük ve 15 dakikalık UP durumunda alım yapılır
-                        if result1Day['pmX_4_0.1_4_7'][len(result1Day)-2] == 'down' and result1Day['pmX_4_0.1_4_7'][len(result1Day)-1] == 'up':
+                        # if result1Day['pmX_4_0.1_4_7'][len(result1Day)-2] == 'down' and result1Day['pmX_4_0.1_4_7'][len(result1Day)-1] == 'up':
                             # if result15Min['pmX_4_0.1_4_7'][len(result15Min)-2] == 'down' and result15Min['pmX_4_0.1_4_7'][len(result15Min)-1] == 'up':
                             # Notify.notify(asset, 'Alım Sinyali %3', 'Trader V2', sound=True)
-                            # Notify.notify(asset, 'Alım Sinyali - 1 D Pmax', 'Trader V2', sound=True)
+                        
+                        
+                        
+                        # Bakiye kontrol ediliyor
+
+                        hotwallet_check = hotwallet.find_one({'asset': 'USDT'},sort=[( '_id', DESCENDING )])
+                        available = hotwallet_check['qty']
+
+
+                        if available > per:
+                            # Notify.notify(asset, 'Alım Sinyali - 1 D Pmax', 'Trader Sim - 1', sound=True)
                             print("<b><blue>SATIN ALINDI 1 D Pmax </blue> </b>")
                             print("<b>{}</b>".format(asset))
                             print("<b><fg 0,95,0><white>{}</white></fg 0,95,0></b>".format(result) )
@@ -567,11 +551,43 @@ def do(asset):
                                 'buy_price': current_price,
                                 'buy_time': datetime.now(),
                                 'track_data' :WatchList,
-                                'candle_data': numpy_data,
-                                'current_pmax_1Day': current_pmax_1Day,
-                                'current_pmax_15Min': current_pmax_15Min
+                                # 'candle_data': numpy_data,
+                                # 'current_pmax_1Day': current_pmax_1Day,
+                                # 'current_pmax_15Min': current_pmax_15Min
                                 })
                             track.delete_one({'asset': asset})
+
+                        
+                            # Gerçek alım durumunda bakiyeler güncelleniyor
+                            qty_buy = per / current_price
+                            
+                            hotwallet_asset_check = hotwallet.find_one({'asset': asset},sort=[( '_id', DESCENDING )])
+
+                            if (hotwallet_asset_check != None):
+                                
+                                hotwallet_new_qty = hotwallet_asset_check['qty'] + qty_buy
+
+                                condition = { "asset": asset }
+                                update_data = { "$set": { "qty": hotwallet_new_qty } }
+                                hotwallet.update_one(condition, update_data)
+                            else:
+                                hotwallet.insert_one({
+                                    'asset': asset,
+                                    'qty': qty_buy,
+                                    })
+
+                            hotwallet_check_for_current_qty = hotwallet.find_one({'asset': 'USDT'},sort=[( '_id', DESCENDING )])
+
+                            hotwallet_tether_new_qty = hotwallet_check_for_current_qty['qty'] - per
+                            
+                            condition = { "asset": 'USDT' }
+                            update_data = { "$set": { "qty": hotwallet_tether_new_qty } }
+                            hotwallet.update_one(condition, update_data)
+                        else:
+                            print('Kota dolu')
+
+
+
 
         
 i = 0
@@ -580,11 +596,25 @@ while i < len(assets):
         # print ("<b><yellow>{}</yellow> </b>".format(f.renderText('Trader V2')))
     do(assets[i])
     i += 1
-    time.sleep(1)
+    time.sleep(2)
     if (i == len(assets)):
+        time.sleep(10)
         print("<b><green>*** Listenin Sonu ***</green> </b>")
         print("<b><yellow>*** Yeniden Başlıyor ***</yellow> </b>")
         i = 0
+
+    # if available > per:
+        
+    # else:
+    #     print('Kota dolu, cüzdan takip ediliyor -- {}'.format(wallet_assets[i]))
+    #     do(wallet_assets[i])
+    #     i += 1
+    #     time.sleep(2)
+    #     if (i == len(wallet_assets)):
+    #         time.sleep(10)
+    #         print("<b><green>*** Wallet Asset Listesinin Sonu ***</green> </b>")
+    #         print("<b><yellow>*** Yeniden Başlıyor ***</yellow> </b>")
+    #         i = 0
 
 
 

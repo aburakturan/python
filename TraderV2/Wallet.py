@@ -24,11 +24,35 @@ parser.add_argument("--sort", "-o", help="neye göre sıralanacak?")
 parser.add_argument("--reverse", "-r", help="reverse sorting?")
 parser.add_argument("--watch", "-w", help="custom takip listesi")
 parser.add_argument("--source", "-s", help="kaynak hangi cüzdan?")
+parser.add_argument("--db", "-d", help="kaynak hangi db?")
+
 args = parser.parse_args()
 
-
 client = MongoClient('localhost',27017)  
-db = client.pmaxV2
+
+if args.db == "sim1":
+    db = client.simulationV1
+elif args.db == "sim2":
+    db = client.simulationV2
+elif args.db == "sim3":
+    db = client.simulationV3
+elif args.db == "sim4":
+    db = client.simulationV4
+elif args.db == "sim5":
+    db = client.simulationV5
+elif args.db == "zsim1":
+    db = client.sim_macd_v1
+elif args.db == "zsim2":
+    db = client.sim_macd_v2
+elif args.db == "zsim3":
+    db = client.sim_macd_v3
+elif args.db == "zsim4":
+    db = client.sim_macd_v4
+elif args.db == "pmaxV2":
+    db = client.pmaxV2
+elif args.db == "pmaxV3":
+    db = client.pmaxV3
+
 
 if args.source == "watch":
     type_of_wallet = "Watch List"
@@ -46,6 +70,7 @@ if args.watch:
 set_printoptions(threshold=maxsize)
 
 client = Client('jjIP0g5xq7S1HjBSHLH1Eizw1qpPO0HxUm1P3CqlGUFKKmb7T4vLj7B6AYbqtEgu', '6W9hO9vrVWjMkThl2stbv0OR80Sl83GpkWzwYsIrOrAvPEVTQStLfKbc3bUasttg')
+total_if_dont_sold_percentage_diff = []
 
 
 def do():
@@ -57,7 +82,7 @@ def do():
     if args.source == "sold":
         Table = PrettyTable(['ID','Asset', 'Buy $', 'Sell $', '%', 'Reason', 'Current $', 'Current %', 'Buy Time', 'Sell Time'])
     else:
-        Table = PrettyTable(['ID','Asset', 'Buy', 'Current', 'Percentage', 'Date'])
+        Table = PrettyTable(['ID','Asset', 'Buy', 'Current', 'Percentage', 'Date', '1Day', '15Min'])
 
     total_percantage = 0
     current_percentage_if_dont_sold = 0
@@ -106,7 +131,7 @@ def do():
             if args.source == "sold":
                 Table.add_row(["---", "---", "---", "---", "---", "---", "---", "---" , "---", "---"])
             else:
-                Table.add_row(["---", "---", "---", "---", "---", "---"])
+                Table.add_row(["---", "---", "---", "---", "---", "---","---","---"])
         
         previous_date = current_date
 
@@ -119,20 +144,42 @@ def do():
                 else:
                     count = count +1
                     if percentage < 0: 
-                        Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'red', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white')   ])
+                        try:
+                            Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'red', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white'),item['current_pmax_1Day'],item['current_pmax_15Min']   ])
+                        except:
+                            Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'red', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white'),"",""   ])
                     else:
-                        Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'green', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white')   ])
+                        try:
+                            Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'red', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white'),item['current_pmax_1Day'],item['current_pmax_15Min']   ])
+                        except:
+                            Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'red', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white'),"",""   ])
 
         else:
             if args.source == "sold":
                 count = count +1
-                Table.add_row([count, item['asset'], buy_price, current_price, colored("%.2f" % round(percentage, 2), 'green', attrs=['bold'])  , item['reason'].split('alama')[0], current_price_if_dont_sold, colored("%.2f" % round(_current_percentage_if_dont_sold, 2), 'red', attrs=['bold']), item['buy_data']['buy_time'].strftime("%d/%m %H:%M"), item['sold_time'].strftime("%d/%m %H:%M")])
+                if (_current_percentage_if_dont_sold > 0 and _current_percentage_if_dont_sold < 10):
+                    _color = "green"
+                else:
+                    _color = "red"
+
+                if _current_percentage_if_dont_sold > percentage:
+                    _color = "yellow"
+                
+                total_if_dont_sold_percentage_diff.append((percentage - _current_percentage_if_dont_sold))
+                
+                Table.add_row([count, item['asset'], buy_price, current_price, colored("%.2f" % round(percentage, 2), "yellow", attrs=['bold'])  , item['reason'].split('alama')[0], current_price_if_dont_sold, colored("%.2f" % round(_current_percentage_if_dont_sold, 2), _color, attrs=['bold']), item['buy_data']['buy_time'].strftime("%d/%m %H:%M"), item['sold_time'].strftime("%d/%m %H:%M")])
             else:
                 count = count +1
                 if percentage < 0: 
-                    Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'red', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white')   ])
+                    try: 
+                        Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'red', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white'),item['current_pmax_1Day'],item['current_pmax_15Min']   ])
+                    except:
+                        Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'red', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white'),"",""   ])
                 else:
-                    Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'green', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white')   ])
+                    try: 
+                        Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'yellow', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white'),item['current_pmax_1Day'],item['current_pmax_15Min']   ])
+                    except:
+                        Table.add_row([colored(count,'white'), colored(item['asset'],'white'), colored(buy_price,'white'), colored(current_price,'white'), colored("%.2f" % round(percentage, 2), 'yellow', attrs=['bold']), colored(item['buy_time'].strftime("%d/%m %H:%M"),'white'),"",""   ])
 
     
     if args.sort:
@@ -158,7 +205,11 @@ def do():
     print("<b><green>Alış</green> </b><b><yellow>{}</yellow></b>".format(db.wallet.count_documents({})) )
     print("<b><green>Satış</green> </b><b><yellow>{}</yellow></b>".format(db.sold.count_documents({})) )
 
-    
+    if args.source == "sold":
+        for calc in total_if_dont_sold_percentage_diff:
+            calc += calc
+        
+        print ('total_if_dont_sold_percentage_diff:',calc)
 
 
 
